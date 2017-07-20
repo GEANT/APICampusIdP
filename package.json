@@ -14,8 +14,10 @@
     "express": "~4.15.2",
     "express-urlrewrite": "^1.2.0",
     "jade": "~1.11.0",
+    "moment": "^2.18.1",
     "mongoose": "^4.11.1",
     "morgan": "~1.8.1",
+    "nconf": "^0.8.4",
     "serve-favicon": "~2.4.2",
     "winston": "^2.3.1",
     "write-yaml": "^1.0.0"
