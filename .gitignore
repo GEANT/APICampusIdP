@@ -1,3 +1,4 @@
 node_modules
 mytests
 .env
+.idea
