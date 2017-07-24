@@ -1,27 +1,29 @@
+var fs = require('fs');
 var express = require('express');
+var jwt = require('jsonwebtoken');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var yaml = require('write-yaml');
-var fs = require('fs');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var idp = require('./routes/idp');
 var clientapi = require('./routes/clientapi');
 
-
+var appConfig = require('./libs/config/index');
 
 var app = express();
 
 
-/*
-DB CONNECTION
- */
+
+
+
+var db_settings = appConfig.get('database');
 var mongoose = require('mongoose');
-console.log('DB_NAME: '+process.env.DB_NAME);
-var db_uri = 'mongodb://'+process.env.DB_USER+':'+process.env.DB_PASSWORD+'@'+process.env.DB_HOST+':'+process.env.DB_PORT+'/'+process.env.DB_NAME+'';
+var db_uri = 'mongodb://'+db_settings.user+':'+db_settings.pass+'@'+db_settings.host+':'+db_settings.port+'/'+db_settings.dbname+'';
+console.log('db_uri: '+db_uri);
 var promise = mongoose.connect(db_uri, {
   useMongoClient: true,
   /* other options */
@@ -66,5 +68,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
 
 module.exports = app;

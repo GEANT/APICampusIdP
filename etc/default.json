@@ -1,0 +1,14 @@
+{
+  "application" : "campusIDP",
+  "http": {
+    "port" : "2456"
+  
+  },
+  "database" : {
+    "host": "localhost",
+    "port": "55132",
+    "user": "dbuser",
+    "pass": "dbpass",
+    "dbname": "dbname"
+  }
+}

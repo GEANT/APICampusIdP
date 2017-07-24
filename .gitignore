@@ -2,3 +2,5 @@ node_modules
 mytests
 .env
 .idea
+etc/*
+!etc/default.json
