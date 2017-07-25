@@ -1,16 +1,5 @@
 #!/usr/bin/env node
 
-
-
-
-/*
-@todo implement logging
- */
-process.env.LOG_DIR = process.env.LOG_DIR || __dirname+'/../logs';
-
-
-
-
 /**
  * Module dependencies.
  */

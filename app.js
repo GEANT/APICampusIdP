@@ -1,4 +1,5 @@
 var fs = require('fs');
+var _ = require('lodash');
 var express = require('express');
 var jwt = require('jsonwebtoken');
 var path = require('path');
@@ -7,11 +8,22 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var yaml = require('write-yaml');
+var passport = require('passport');
+
+
+/**
+ * routes
+ */
 var index = require('./routes/index');
 var users = require('./routes/users');
 var idp = require('./routes/idp');
 var clientapi = require('./routes/clientapi');
+var authenticate = require('./routes/authenticate');
 
+
+/**
+ * config
+ */
 var appConfig = require('./libs/config/index');
 
 var app = express();
@@ -46,6 +58,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
+app.use('/authenticate', authenticate);
 app.use('/users', users);
 app.use('/idp', idp);
 // client api ui
