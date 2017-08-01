@@ -4,3 +4,4 @@ mytests
 .idea
 etc/*
 !etc/default.json
+logs/access.log

@@ -14,6 +14,6 @@ Config.prototype.get = function (key) {
     console.log('request for '+key);
     var result = nconf.get(key);
     return result;
-}
+};
 
 module.exports = new Config();

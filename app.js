@@ -9,8 +9,13 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var yaml = require('write-yaml');
 var passport = require('passport');
-
-
+var rfs = require('rotating-file-stream');
+var logDirectory = path.join(__dirname, 'logs');
+fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+var accessLogStream = rfs('access.log', {
+  interval: '1d', // rotate daily
+  path: logDirectory
+});
 /**
  * routes
  */
@@ -27,21 +32,19 @@ var authenticate = require('./routes/authenticate');
 var appConfig = require('./libs/config/index');
 
 var app = express();
-
+app.set('appConfig', appConfig);
 
 
 
 
 var db_settings = appConfig.get('database');
-var mongoose = require('mongoose');
 var db_uri = 'mongodb://'+db_settings.user+':'+db_settings.pass+'@'+db_settings.host+':'+db_settings.port+'/'+db_settings.dbname+'';
-console.log('db_uri: '+db_uri);
-var promise = mongoose.connect(db_uri, {
+var mongoose = require('mongoose');
+mongoose.connect(db_uri, {
   useMongoClient: true,
   /* other options */
 });
-
-
+mongoose.Promise = global.Promise;
 
 
 
@@ -49,9 +52,8 @@ var promise = mongoose.connect(db_uri, {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+
+app.use(logger('combined', {stream: accessLogStream}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());

@@ -10,5 +10,13 @@
     "user": "dbuser",
     "pass": "dbpass",
     "dbname": "dbname"
+  },
+  "jwt": {
+    "expiresInSeconds": 3600,
+    "alg": "RS256",
+    "secret": "1234",
+    "privateKey": "jwt.key",
+    "publicKey": "jwt.crt",
+    "clockSkew": 120
   }
 }
