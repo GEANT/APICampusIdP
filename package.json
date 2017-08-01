@@ -17,6 +17,7 @@
     "express-urlrewrite": "^1.2.0",
     "jade": "~1.11.0",
     "jsonwebtoken": "^7.4.1",
+    "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "mongoose": "^4.11.4",
     "morgan": "~1.8.1",
