@@ -16,6 +16,10 @@ var accessLogStream = rfs('access.log', {
   interval: '1d', // rotate daily
   path: logDirectory
 });
+
+
+var verifyToken = require('./libs/verifyToken');
+
 /**
  * routes
  */
@@ -24,7 +28,7 @@ var users = require('./routes/users');
 var idp = require('./routes/idp');
 var clientapi = require('./routes/clientapi');
 var authenticate = require('./routes/authenticate');
-
+var protectedtest = require('./routes/protectedtest');
 
 /**
  * config
@@ -65,6 +69,7 @@ app.use('/users', users);
 app.use('/idp', idp);
 // client api ui
 app.use('/clientapi',clientapi);
+app.use('/protectedtest',verifyToken, protectedtest);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

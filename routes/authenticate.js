@@ -7,7 +7,7 @@ var User = require('../models/User');
 
 router.post('/', function (req, res) {
     var app = req.app;
-    var jwtConfig = app.get('appConfig').get('jwt');
+    var jwtConfig = req.app.get('appConfig').get('jwt');
     if (!req.body.name || !req.body.password) {
         res.status(401).send({success: false, message: 'Authentication failed. Username/Password not provided '});
     }
