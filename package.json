@@ -28,5 +28,8 @@
     "serve-favicon": "~2.4.2",
     "winston": "^2.3.1",
     "write-yaml": "^1.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^3.5.0"
   }
 }
