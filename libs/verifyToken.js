@@ -47,4 +47,5 @@ module.exports = function(req,res,next) {
             "message": "Authorization failed."
         });
     }
-}
+};
+

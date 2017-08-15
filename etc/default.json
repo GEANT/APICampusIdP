@@ -1,5 +1,6 @@
 {
   "application" : "campusIDP",
+  "baseUrl" : "http://example.com:2456/",
   "http": {
     "port" : "2456"
   
@@ -12,7 +13,7 @@
     "dbname": "dbname"
   },
   "jwt": {
-    "expiresInSeconds": 3600,
+    "expiresInSeconds": 36000,
     "alg": "RS256",
     "secret": "1234",
     "privateKey": "jwt.key",
