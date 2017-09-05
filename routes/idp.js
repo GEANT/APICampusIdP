@@ -1,17 +1,17 @@
-var express = require('express');
-var router = express.Router();
-var _ = require('lodash');
-var base64url = require('base64url');
-var Provider = require('../models/Provider');
-var mongoose = require('mongoose');
-var verifyToken = require('../libs/verifyToken');
-var vocab = require('../libs/apiVocab');
-var jsonld = require('jsonld');
+const express = require('express');
+const router = express.Router();
+const _ = require('lodash');
+const base64url = require('base64url');
+const Provider = require('../models/Provider');
+const mongoose = require('mongoose');
+const verifyToken = require('../libs/verifyToken');
+const vocab = require('../libs/apiVocab').context;
+const jsonld = require('jsonld');
 
 
 
-var validateIDPConf = require('../libs/Idpconfigurator').validateIDPConf;
-var validateReq = require('../libs/validators').serviceValidatorRequest;
+const validateIDPConf = require('../libs/Idpconfigurator').validateIDPConf;
+const validateReq = require('../libs/validators').serviceValidatorRequest;
 
 
 
@@ -26,11 +26,11 @@ var generatesYamlFiles = function(cnf){
 /**
  * create new service
  */
-router.post('/', validateReq,function (req, res) {
+router.post('/',verifyToken, validateReq, function (req, res) {
     console.log('----------START REQUEST----------------');
 
 
-    console.log('d '+JSON.stringify(req.zupa));
+    console.log('res '+JSON.stringify(req.jsonldexpanded));
 
 
 

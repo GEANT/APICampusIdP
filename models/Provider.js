@@ -30,7 +30,7 @@ ProviderSchema.plugin(version, {
     suppressVersionIncrement: false,
     suppressRefIdIndex: false,
     documentProperty: 'entityID',
-    collection: 'providers_history',
+    collection: 'providers_history'
 
 });
 ProviderSchema.pre('save', function (next) {

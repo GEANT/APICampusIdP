@@ -1,17 +1,17 @@
-var fs = require('fs');
-var _ = require('lodash');
-var express = require('express');
-var jwt = require('jsonwebtoken');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var yaml = require('write-yaml');
-var passport = require('passport');
-var jsonld = require('jsonld');
-var rfs = require('rotating-file-stream');
-var logDirectory = path.join(__dirname, 'logs');
+const fs = require('fs');
+const _ = require('lodash');
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const yaml = require('write-yaml');
+const passport = require('passport');
+const jsonld = require('jsonld');
+const rfs = require('rotating-file-stream');
+const logDirectory = path.join(__dirname, 'logs');
 fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
 var accessLogStream = rfs('access.log', {
     interval: '1d', // rotate daily
@@ -24,26 +24,27 @@ var verifyToken = require('./libs/verifyToken');
 /**
  * routes
  */
-var index = require('./routes/index');
-var users = require('./routes/users');
-var idp = require('./routes/idp');
-var clientapi = require('./routes/clientapi');
-var authenticate = require('./routes/authenticate');
-var protectedtest = require('./routes/protectedtest');
-var jsonldContext = require('./routes/jsonldContext');
+const index = require('./routes/index');
+const users = require('./routes/users');
+const idp = require('./routes/idp');
+const clientapi = require('./routes/clientapi');
+const authenticate = require('./routes/authenticate');
+const protectedtest = require('./routes/protectedtest');
+const jsonldContext = require('./routes/jsonldContext');
+const apiSchema = require('./routes/apiSchema');
 
 /**
  * config
  */
-var appConfig = require('./libs/config/index');
+const appConfig = require('./libs/config/index');
 
-var app = express();
+const app = express();
 app.set('appConfig', appConfig);
 
 
-var db_settings = appConfig.get('database');
-var db_uri = 'mongodb://' + db_settings.user + ':' + db_settings.pass + '@' + db_settings.host + ':' + db_settings.port + '/' + db_settings.dbname + '';
-var mongoose = require('mongoose');
+const db_settings = appConfig.get('database');
+const db_uri = 'mongodb://' + db_settings.user + ':' + db_settings.pass + '@' + db_settings.host + ':' + db_settings.port + '/' + db_settings.dbname + '';
+const mongoose = require('mongoose');
 
 var version = require('mongoose-version');
 
@@ -82,7 +83,9 @@ app.use('/idp', idp);
 // client api ui
 app.use('/clientapi', clientapi);
 app.use('/protectedtest', verifyToken, protectedtest);
+
 app.use('/context', jsonldContext);
+app.use('/schema', apiSchema);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
