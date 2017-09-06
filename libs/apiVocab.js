@@ -120,7 +120,7 @@ var schema = {
             "rdfs:label": "private Key Password"
         },
         {
-            "@id" : vocab+"publicCert",
+            "@id" : vocab+"publicKey",
             "@type": "rdf:Property",
             "rdfs:comment": "public Certificate",
             "rdfs:label": "public Certificate"
