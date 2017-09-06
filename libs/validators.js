@@ -41,7 +41,7 @@ var processValidation = function(expanded){
         console.log('myVocab: '+myVocab+'   --- '+JSON.stringify(expanded[0]['@type']));
 
         validateWebComponent(expanded).then(function(){
-            if(expanded[0]['@type'][0] === myVocab+'IdPService'){
+            if(expanded[0]['@type'][0] === myVocab+'ServiceDescription'){
                 console.log('processValidation: success');
                 resolve(expanded);
             }else{

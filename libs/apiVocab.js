@@ -1,5 +1,5 @@
 
-const vocab = "https://geant.org/campusidp/";
+const vocab = "http://geant.org/schema/campusidp/";
 
 var context = {
     "@vocab": vocab,
@@ -162,6 +162,39 @@ var schema = {
             "rdfs:comment": "entityID of Identity/Service Provider",
             "rdfs:label": "entityID of Identity/Service Provider"
         },
+        {
+            "@id" : vocab+"metadataProviders",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"IdPConf"
+                }
+            ],
+            "rdfs:comment": "collection of metadataProviders",
+            "rdfs:label": "collection of metadataProviders"
+        },
+        {
+            "@id" : vocab+"idpsso",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"IdPConf"
+                }
+            ],
+            "rdfs:comment": "idpsso",
+            "rdfs:label": "idpsso"
+        },
+        {
+            "@id" : vocab+"aa",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"IdPConf"
+                }
+            ],
+            "rdfs:comment": "aa",
+            "rdfs:label": "aa"
+        }
 
     ]
 }
