@@ -57,6 +57,18 @@ var schema = {
             "rdfs:label": "Definition of an attribute"
         },
         {
+            "@id" : vocab+"DataSource",
+            "@type": "rdfs:Class",
+            "rdfs:comment": "Definition of data source",
+            "rdfs:label": "Definition of data source"
+        },
+        {
+            "@id" : vocab+"MetadataProvider",
+            "@type": "rdfs:Class",
+            "rdfs:comment": "MetadataProvider definition",
+            "rdfs:label": "MetadataProvider definition"
+        },
+        {
             "@id" : vocab+"hostname",
             "@type": "rdf:Property",
             "http://schema.org/domainIncludes" : [
@@ -138,7 +150,19 @@ var schema = {
             "@type": "rdf:Property",
             "rdfs:comment": "version",
             "rdfs:label": "version"
-        }
+        },
+        {
+            "@id" : vocab+"entityID",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"IdPConf"
+                }
+            ],
+            "rdfs:comment": "entityID of Identity/Service Provider",
+            "rdfs:label": "entityID of Identity/Service Provider"
+        },
+
     ]
 }
 
