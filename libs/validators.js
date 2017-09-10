@@ -1,14 +1,16 @@
-var _ = require('lodash');
+const _ = require('lodash');
 var jsonld = require('jsonld');
 var jsonldPromises = jsonld.promises;
 
 var vocab = require('./apiVocab').context;
+var schema = require('./apiVocab').schema;
+
 var context = vocab;
 var myVocab = context['@vocab'];
 
 var genKeyWithPref  = function(key){
     return myVocab+key;
-}
+};
 
 var validateWebComponent = function(expand){
     console.log('validateWebComponent: triggered');
@@ -74,6 +76,13 @@ var serviceValidatorRequest = function (req, res, next) {
     req.body['@context'] = context;
 
     var promise = jsonldPromises.expand(req.body);
+
+    var flatten = jsonldPromises.flatten(req.body);
+
+    flatten.then(function(flatten){
+        console.log('Flatten: '+JSON.stringify(flatten, null,2));
+    });
+
 
     promise.then(processValidation).then(function(expanded){
 
