@@ -3,7 +3,6 @@
   "baseUrl" : "http://example.com:2456/",
   "http": {
     "port" : "2456"
-  
   },
   "database" : {
     "host": "localhost",
@@ -19,5 +18,8 @@
     "privateKey": "jwt.key",
     "publicKey": "jwt.crt",
     "clockSkew": 120
+  },
+  "contexts" : {
+    "serviceconf" : "http://geant.org/capusidp/context"
   }
 }

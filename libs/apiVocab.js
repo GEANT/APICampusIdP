@@ -59,7 +59,7 @@ var schema = {
         {
             "@id" : vocab+"DataSource",
             "@type": "rdfs:Class",
-            "rdfs:comment": "Definition of data source",
+            "rdfs:comment": "Definition of data source (Ldap, Database etc)",
             "rdfs:label": "Definition of data source"
         },
         {
@@ -67,6 +67,12 @@ var schema = {
             "@type": "rdfs:Class",
             "rdfs:comment": "MetadataProvider definition",
             "rdfs:label": "MetadataProvider definition"
+        },
+        {
+            "@id" : vocab+"X509Certificate",
+            "@type": "rdfs:Class",
+            "rdfs:comment": "X509Certificate",
+            "rdfs:label": "X509Certificate"
         },
         {
             "@id" : vocab+"hostname",
@@ -89,6 +95,18 @@ var schema = {
             ],
             "rdfs:comment": "http",
             "rdfs:label": "http"
+        },
+        {
+            "@id" : vocab+"attrID",
+            "@type": "rdf:Property",
+            "rdfs:comment": "attrID",
+            "rdfs:label": "attrID"
+        },
+        {
+            "@id" : vocab+"attrType",
+            "@type": "rdf:Property",
+            "rdfs:comment": "attrType",
+            "rdfs:label": "attrType"
         },
         {
             "@id" : vocab+"https",
@@ -134,6 +152,9 @@ var schema = {
                 },
                 {
                     "@id" : vocab+"WebServer"
+                },
+                {
+                    "@id" : vocab+"MetadataProvider"
                 }
             ],
             "rdfs:comment": "information about software used by component",
@@ -194,6 +215,73 @@ var schema = {
             ],
             "rdfs:comment": "aa",
             "rdfs:label": "aa"
+        },
+        {
+            "@id" : vocab+"url",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"MetadataProvider"
+                }
+            ],
+            "rdfs:comment": "URL ",
+            "rdfs:label": "URL"
+        },
+        {
+            "@id" : vocab+"ref",
+            "@type": "rdf:Property",
+            "rdfs:comment": "reference to other node",
+            "rdfs:label": "ref"
+        },
+        {
+            "@id" : vocab+"dependency",
+            "@type": "rdf:Property",
+            "rdfs:comment": "dependecy on other node",
+            "rdfs:label": "dependency"
+        },
+        {
+            "@id" : vocab+"certificates",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"sso"
+                },
+                {
+                    "@id" : vocab+"aa"
+                }
+            ],
+            "rdfs:comment": "certificate collection",
+            "rdfs:label": "certificates"
+        },
+        {
+            "@id" : vocab+"use",
+            "@type": "rdf:Property",
+            "rdfs:comment": "use",
+            "rdfs:label": "use"
+        },
+        {
+            "@id" : vocab+"components",
+            "@type": "rdf:Property",
+            "rdfs:comment": "components : usually collection of config elements",
+            "rdfs:label": "components"
+        },
+        {
+            "@id" : vocab+"baseDN",
+            "@type": "rdf:Property",
+            "rdfs:comment": "base DN LDAP",
+            "rdfs:label": "baseDN"
+        },
+        {
+            "@id" : vocab+"authnUser",
+            "@type": "rdf:Property",
+            "rdfs:comment": "username used for authentication to resources",
+            "rdfs:label": "authnUser"
+        },
+        {
+            "@id" : vocab+"password",
+            "@type": "rdf:Property",
+            "rdfs:comment": "password used for authentication to resources",
+            "rdfs:label": "password"
         }
 
     ]
