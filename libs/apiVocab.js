@@ -266,6 +266,12 @@ var schema = {
             "rdfs:label": "components"
         },
         {
+            "@id" : vocab+"definitions",
+            "@type": "rdf:Property",
+            "rdfs:comment": "collection (array) of nodes",
+            "rdfs:label": "definitions"
+        },
+        {
             "@id" : vocab+"baseDN",
             "@type": "rdf:Property",
             "rdfs:comment": "base DN LDAP",
