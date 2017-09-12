@@ -236,7 +236,7 @@ var schema = {
         {
             "@id" : vocab+"dependency",
             "@type": "rdf:Property",
-            "rdfs:comment": "dependecy on other node",
+            "rdfs:comment": "dependecy on other node(s)",
             "rdfs:label": "dependency"
         },
         {
@@ -288,6 +288,40 @@ var schema = {
             "@type": "rdf:Property",
             "rdfs:comment": "password used for authentication to resources",
             "rdfs:label": "password"
+        },
+        {
+            "@id" : vocab+"attributes",
+            "@type": "rdf:Property",
+            "rdfs:comment": "attributes : collection of attributes",
+            "rdfs:label": "attributes"
+        },
+        {
+            "@id" : vocab+"sourceAttrIbuteId",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"AttributeDefinition"
+                }
+            ],
+            "rdfs:comment": "sourceAttrIbuteId: ",
+            "rdfs:label": "sourceAttrIbuteId"
+        },
+        {
+            "@id" : vocab+"exposed",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"AttributeDefinition"
+                }
+            ],
+            "rdfs:comment": "exposed: defined wether attribute may be released",
+            "rdfs:label": "exposed"
+        },
+        {
+            "@id" : vocab+"type",
+            "@type": "rdf:Property",
+            "rdfs:comment": "type",
+            "rdfs:label": "type"
         }
 
     ]
