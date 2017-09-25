@@ -39,6 +39,12 @@ var schema = {
             "rdfs:label": "ServiceDescription"
         },
         {
+            "@id" : vocab+"Collection",
+            "@type": "rdfs:Class",
+            "rdfs:comment": "Collection of nodes.",
+            "rdfs:label": "Collection"
+        },
+        {
             "@id" : vocab+"WebServer",
             "@type": "rdfs:Class",
             "rdfs:comment": "WebServer frontend configuration.",
@@ -195,15 +201,15 @@ var schema = {
             "rdfs:label": "collection of metadataProviders"
         },
         {
-            "@id" : vocab+"idpsso",
+            "@id" : vocab+"sso",
             "@type": "rdf:Property",
             "http://schema.org/domainIncludes" : [
                 {
                     "@id" : vocab+"IdPConf"
                 }
             ],
-            "rdfs:comment": "idpsso",
-            "rdfs:label": "idpsso"
+            "rdfs:comment": "sso",
+            "rdfs:label": "sso"
         },
         {
             "@id" : vocab+"aa",
@@ -288,8 +294,19 @@ var schema = {
             "@type": "rdf:Property",
             "rdfs:comment": "password used for authentication to resources",
             "rdfs:label": "password"
+        },
+        {
+            "@id" : vocab+"web",
+            "@type": "rdf:Property",
+            "rdfs:comment": "web",
+            "rdfs:label": "web"
+        },
+        {
+            "@id" : vocab+"idp",
+            "@type": "rdf:Property",
+            "rdfs:comment": "idp",
+            "rdfs:label": "idp"
         }
-
     ]
 }
 

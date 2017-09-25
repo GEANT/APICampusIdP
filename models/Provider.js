@@ -3,10 +3,13 @@ var version = require('mongoose-version');
 var _ = require('lodash');
 var Schema = mongoose.Schema;
 var ProviderSchema = new Schema({
-    entityID: {
+    name: {
         type: String,
         required: true,
         index: {unique: false}
+    },
+    configuration : {
+        type: Object
     },
     data: {
         type: Object
