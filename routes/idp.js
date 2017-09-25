@@ -11,6 +11,7 @@ const uuidv1 = require('uuid/v1');
 
 const validateIDPConf = require('../libs/Idpconfigurator').validateIDPConf;
 const validateReq = require('../libs/validators').serviceValidatorRequest;
+const filterOutput = require('../libs/filterOutput').hideSensitive;
 
 
 var generatesYamlFiles = function (cnf) {
@@ -100,7 +101,7 @@ router.post('/:name', verifyToken, validateReq,
 /**
  * @todo add token verification
  */
-router.get('/:name/:filter', verifyToken,function (req, res, next) {
+router.get('/:name/:filter', verifyToken, function (req, res, next) {
     console.log('nameIDP: ' + JSON.stringify(req.params));
 
     let name = req.params.name;
@@ -109,11 +110,12 @@ router.get('/:name/:filter', verifyToken,function (req, res, next) {
     Provider.findOne({'name': name}, function (err, result) {
         if (!err) {
             if (result) {
+                let filteredRes = filterOutput(result);
                 if(detail === 'configuration'){
-                    res.json(result.configuration)
+                    res.json(filteredRes.configuration)
                 }
                 else {
-                    res.json(result)
+                    res.json(filteredRes)
                 }
 
             }
