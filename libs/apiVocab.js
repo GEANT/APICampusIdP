@@ -19,7 +19,7 @@ var context = {
     "apiVersion": "xsd:string"
 };
 
-var schema = {
+const schema = {
     "@context": {
         "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
         "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
@@ -242,7 +242,7 @@ var schema = {
         {
             "@id" : vocab+"dependency",
             "@type": "rdf:Property",
-            "rdfs:comment": "dependecy on other node",
+            "rdfs:comment": "dependecy on other node(s)",
             "rdfs:label": "dependency"
         },
         {
@@ -302,13 +302,48 @@ var schema = {
             "rdfs:label": "web"
         },
         {
-            "@id" : vocab+"idp",
+            "@id": vocab + "idp",
             "@type": "rdf:Property",
             "rdfs:comment": "idp",
             "rdfs:label": "idp"
+
+        },
+        {
+            "@id" : vocab+"attributes",
+            "@type": "rdf:Property",
+            "rdfs:comment": "attributes : collection of attributes",
+            "rdfs:label": "attributes"
+        },
+        {
+            "@id" : vocab+"sourceAttributeId",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"AttributeDefinition"
+                }
+            ],
+            "rdfs:comment": "sourceAttributeId: ",
+            "rdfs:label": "sourceAttributeId"
+        },
+        {
+            "@id" : vocab+"exposed",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"AttributeDefinition"
+                }
+            ],
+            "rdfs:comment": "exposed: defined wether attribute may be released",
+            "rdfs:label": "exposed"
+        },
+        {
+            "@id" : vocab+"type",
+            "@type": "rdf:Property",
+            "rdfs:comment": "type",
+            "rdfs:label": "type"
         }
     ]
-}
+};
 
 
 module.exports.context = context;
