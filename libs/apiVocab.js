@@ -75,6 +75,12 @@ const schema = {
             "rdfs:label": "MetadataProvider definition"
         },
         {
+            "@id" : vocab+"KeyDescriptor",
+            "@type": "rdfs:Class",
+            "rdfs:comment": "KeyDescriptor",
+            "rdfs:label": "KeyDescriptor"
+        },
+        {
             "@id" : vocab+"X509Certificate",
             "@type": "rdfs:Class",
             "rdfs:comment": "X509Certificate",
