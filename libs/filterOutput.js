@@ -16,18 +16,35 @@ var getGraph = function (input) {
      */
 };
 
-var hideSensitive = function (inputGraph) {
-    /*
-    @todo filter out sensitive information like passwords, private keys and so on...
-     */
-    if (inputGraph.configuration && inputGraph.configuration.data && inputGraph.configuration.data['@graph']) {
+var traversalWalk = function (input) {
+
+};
+
+var hideSensitive = function (inputData) {
+
+    if (inputData.configuration && inputData.configuration.data && inputData.configuration.data['@graph']) {
         console.log(`>>>>>>>> @graph FOUND`);
+       _.find(inputData.configuration.data['@graph'], function (o) {
+            if(o.hasOwnProperty('privateKey')  && _.isString(o.privateKey)) {
+                o.privateKey = { "@type": "hidden"};
+            //    console.log(`object for private key:   ${JSON.stringify(o)}`);
+            }
+            if (o.hasOwnProperty('privateKeyPassword') && _.isString(o.privateKeyPassword)){
+                o.privateKeyPassword = { "@type": "hidden"};
+            //    console.log(`object for privateKeyPassword:   ${JSON.stringify(o)}`);
+            }
+            if (o.hasOwnProperty('password') && _.isString(o.password)){
+                o.password = { "@type": "hidden"};
+            //    console.log(`object for password:   ${JSON.stringify(o)}`);
+            }
+        });
+
     }
     else {
         console.log(`>>>>>>>> @graph NOT FOUND`);
     }
 
-    return inputGraph;
+    return inputData;
 };
 
 
