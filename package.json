@@ -17,6 +17,7 @@
     "express": "~4.15.2",
     "express-urlrewrite": "^1.2.0",
     "jade": "~1.11.0",
+    "json2yaml": "^1.1.0",
     "jsonld": "^0.4.12",
     "jsonwebtoken": "^7.4.1",
     "lodash": "^4.17.4",
@@ -31,6 +32,7 @@
     "serve-favicon": "~2.4.2",
     "uuid": "^3.1.0",
     "winston": "^2.3.1",
+    "write-data": "^1.0.0",
     "write-yaml": "^1.0.0"
   },
   "devDependencies": {
