@@ -1,3 +1,4 @@
+'use strict';
 const fs = require('fs');
 const _ = require('lodash');
 const express = require('express');
@@ -44,14 +45,17 @@ app.set('appConfig', appConfig);
 
 const db_settings = appConfig.get('database');
 const db_uri = 'mongodb://' + db_settings.user + ':' + db_settings.pass + '@' + db_settings.host + ':' + db_settings.port + '/' + db_settings.dbname + '';
-var mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
-var version = require('mongoose-version');
 
-mongoose.connect(db_uri, {
-    useMongoClient: true,
-    /* other options */
-});
+const mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
+
+var version = require('mongoose-version');
+if(process.env.NODE_ENV !== 'test') {
+    mongoose.connect(db_uri, {
+        useMongoClient: true,
+        /* other options */
+    });
+}
 
 
 

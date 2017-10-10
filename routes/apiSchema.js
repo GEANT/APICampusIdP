@@ -1,8 +1,9 @@
-var express = require('express');
-var router = express.Router();
-var _ = require('lodash');
+'use strict';
+const express = require('express');
+const router = express.Router();
+const _ = require('lodash');
 
-var schema = require('../libs/apiVocab').schema;
+const schema = require('../libs/apiVocab').schema;
 
 router.get('/', function(req,res){
     var reqAccepts = req.accepts();

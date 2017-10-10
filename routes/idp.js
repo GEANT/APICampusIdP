@@ -12,6 +12,8 @@ const uuidv1 = require('uuid/v1');
 const validateIDPConf = require('../libs/Idpconfigurator').validateIDPConf;
 const validateReq = require('../libs/validators').serviceValidatorRequest;
 const filterOutput = require('../libs/filterOutput').hideSensitive;
+const convertToAnsible = require('../libs/convertToAnsible').translateToYaml;
+const yaml = require('write-yaml');
 
 
 var generatesYamlFiles = function (cnf) {
@@ -39,18 +41,18 @@ router.post('/', verifyToken, validateReq, function (req, res) {
     let query = Provider.findOne({name: req.inputhostname});
     let promise = query.exec();
 
-    promise.then( function(doc){
-        if(doc === null){
+    promise.then(function (doc) {
+        if (doc === null) {
             let newProvider = new Provider({
                 name: req.inputhostname,
-                configuration:{
+                configuration: {
                     format: "flatcompact",
-                    data : req.jsoncompactflatten,
+                    data: req.jsoncompactflatten,
                     version: uuidv1()
                 }
             });
             let promise = newProvider.save();
-            promise.then(function(doc){
+            promise.then(function (doc) {
                 res.json(doc);
             });
 
@@ -58,11 +60,9 @@ router.post('/', verifyToken, validateReq, function (req, res) {
         else {
             return res.status(409).json({"error": true, "message": "host already exist"});
         }
-    }).catch(function(error){
-        return res.status(404).json({"error": true, "message": ""+error+""});
+    }).catch(function (error) {
+        return res.status(404).json({"error": true, "message": "" + error + ""});
     });
-
-
 
 
     console.log('----------END REQUEST------------');
@@ -98,9 +98,7 @@ router.post('/:name', verifyToken, validateReq,
 );
 
 
-/**
- * @todo add token verification
- */
+
 router.get('/:name/:filter', verifyToken, function (req, res, next) {
     console.log('nameIDP: ' + JSON.stringify(req.params));
 
@@ -111,7 +109,23 @@ router.get('/:name/:filter', verifyToken, function (req, res, next) {
         if (!err) {
             if (result) {
                 let filteredRes = filterOutput(result);
-                if(detail === 'configuration'){
+                if (detail === 'configuration') {
+
+                    // TEST to store absible playbook
+                    let convertedToAnsible = convertToAnsible(result.configuration.data);
+                    convertedToAnsible.then(function (resolve, reject) {
+                        if (resolve) {
+
+                            // temporary test
+                            yaml.sync('zupa.yaml', resolve);
+                        }
+                    });
+
+
+                    //
+                    // console.log(`${convertedToAnsible}`);
+
+
                     res.json(filteredRes.configuration)
                 }
                 else {
@@ -122,7 +136,7 @@ router.get('/:name/:filter', verifyToken, function (req, res, next) {
             else {
                 res.status(404).json({"error": true, "message": "Not found"});
             }
-           // console.log(`REsult: ${result}`);
+            // console.log(`REsult: ${result}`);
         }
         else {
             res.send(err);
@@ -131,9 +145,6 @@ router.get('/:name/:filter', verifyToken, function (req, res, next) {
 
 
 });
-
-
-
 
 
 module.exports = router;
