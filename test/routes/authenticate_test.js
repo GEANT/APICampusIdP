@@ -1,6 +1,8 @@
 const assert = require('assert');
 const request = require('supertest');
 const app = require('../../app');
+const mongoose = require('mongoose');
+const User = require('../../models/User');
 
 describe('/authenticate route', () => {
 
@@ -8,6 +10,36 @@ describe('/authenticate route', () => {
         name: 'fakeuser',
         password: 'password'
     };
+
+    let properUser = {
+        name: 'properuser',
+        password: 'properpassword'
+    };
+
+    let jwtToken;
+
+    before((done) => {
+        mongoose.connection.collections.users.drop(() => {
+            done()
+        });
+    });
+    before((done) => {
+        const user = new User({
+            username: 'properuser',
+            email: 'proper@example.com',
+            password: 'properpassword'
+        });
+        user.save().then((res, err) => {
+            if (err) {
+                done(err);
+            }
+            else {
+                done();
+            }
+        }).catch(err => {
+            done(err);
+        });
+    });
 
     it('reject a GET', (done) => {
         request(app)
@@ -51,9 +83,19 @@ describe('/authenticate route', () => {
                 }
             });
     });
-    xit('correct authentication', (done)=>{
-
+    it('authentication success for proper user/pass', (done) => {
+        request(app)
+            .post('/authenticate')
+            .send(properUser)
+            .expect(200)
+            .expect("Content-type",/json/)
+            .end((err, res) => {
+                if (err) {
+                    done(err);
+                }
+                else {
+                    done();
+                }
+            });
     });
-
-
 });
