@@ -1,0 +1,25 @@
+{
+  "application" : "campusIDP",
+  "baseUrl" : "http://example.com:2456/",
+  "http": {
+    "port" : "2456"
+  },
+  "database" : {
+    "host": "localhost",
+    "port": "55132",
+    "user": "dbuser",
+    "pass": "dbpass",
+    "dbname": "dbname"
+  },
+  "jwt": {
+    "expiresInSeconds": 36000,
+    "alg": "RS256",
+    "secret": "1234",
+    "privateKey": "jwt.key",
+    "publicKey": "jwt.crt",
+    "clockSkew": 120
+  },
+  "contexts" : {
+    "serviceconf" : "http://geant.org/capusidp/context"
+  }
+}

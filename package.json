@@ -1,0 +1,48 @@
+{
+  "name": "idpapi",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "NODE_ENV=test mocha -R spec --recursive",
+    "test-coverage": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha -R test/**/*"
+  },
+  "dependencies": {
+    "base64url": "^2.0.0",
+    "bcrypt": "^1.0.3",
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "^2.6.9",
+    "dotenv": "^4.0.0",
+    "express": "^4.16.2",
+    "express-urlrewrite": "^1.2.0",
+    "jade": "~1.11.0",
+    "json2yaml": "^1.1.0",
+    "jsonld": "^0.4.12",
+    "jsonwebtoken": "^7.4.3",
+    "lodash": "^4.17.4",
+    "moment": "^2.19.0",
+    "mongoose": "^4.12.1",
+    "mongoose-version": "^1.1.0",
+    "morgan": "~1.8.1",
+    "nconf": "^0.8.5",
+    "passport": "^0.3.2",
+    "passport-jwt": "^2.2.1",
+    "rotating-file-stream": "^1.3.2",
+    "serve-favicon": "^2.4.5",
+    "uuid": "^3.1.0",
+    "winston": "^2.3.1",
+    "write-data": "^1.0.0",
+    "write-yaml": "^1.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "expect": "^21.2.1",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.5.3",
+    "nyc": "^11.2.1",
+    "supertest": "^3.0.0",
+    "tap": "^10.7.2"
+  }
+}
