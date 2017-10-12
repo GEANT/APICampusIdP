@@ -5,3 +5,5 @@ mytests
 etc/*
 !etc/default.json
 logs/*access.log
+coverage
+.nyc_output
