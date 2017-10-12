@@ -15,10 +15,10 @@ router.post('/', function (req, res) {
         var name = req.body.name;
         var password = req.body.password;
 
-        User.findOne({username: name}, function (err, user) {
+        User.findOne({username: name, disabled: false}, function (err, user) {
             if (err) return console.error(err);
             if (!user) {
-                res.status(401).send({success: false, message: 'Authentication failed. User not found.'});
+                res.status(401).send({success: false, message: 'Authentication failed.'});
             }
             else {
                 user.checkPassword(req.body.password, function (err, isMatch) {

@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "NODE_ENV=test mocha --recursive",
-    "test-coverage": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha  -R test/**/*"
+    "test": "NODE_ENV=test mocha -R spec --recursive",
+    "test-coverage": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha -R test/**/*"
   },
   "dependencies": {
     "base64url": "^2.0.0",
@@ -37,6 +37,7 @@
     "write-yaml": "^1.0.0"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
     "expect": "^21.2.1",
     "istanbul": "^0.4.5",
     "mocha": "^3.5.3",

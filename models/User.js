@@ -13,7 +13,11 @@ var UserSchema = new Schema({
         type: String,
         required: true
     },
-    email: String
+    email: String,
+    disabled: {
+        type: Boolean,
+        default: false
+    }
 }, {collection: 'users'});
 UserSchema.pre('save', function (next) {
     var user = this;
