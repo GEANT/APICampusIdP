@@ -104,7 +104,7 @@ var processValidation = function (expanded) {
 var serviceValidatorRequest = function (req, res, next) {
     let contentTypes = ['application/json', 'application/ld+json'];
     if (_.indexOf(contentTypes, req.header('content-type')) < 0) {
-        return res.status(400).json({'error': true, 'message': 'Invalid content-type'});
+        return res.status(415).json({'error': true, 'message': 'Invalid content-type. Supported: application/json, application/ld+json'});
     }
 
     // check for matching @context url

@@ -3,18 +3,22 @@ const request = require('supertest');
 const app = require('../../app');
 const mongoose = require('mongoose');
 const User = require('../../models/User');
-
+const sampleUser = require('../sample_data').sampleUser;
 
 describe('Model User', () => {
 
-    let sampleUser = {
-        username: 'sampleuser',
-        email: 'sampleuser@example.com',
-        password: 'samplepass'
-    };
+    before((done) =>{
+        User.find().remove(done);
+    });
+
     before((done) => {
-        mongoose.connection.collections.users.drop(() => {
-            done();
+        mongoose.connection.collections.users.drop((err,res) => {
+            if(err){
+                done(err);
+            }
+            else {
+                done();
+            }
         });
     });
 
@@ -25,6 +29,8 @@ describe('Model User', () => {
         user.save().then(() => {
             assert(!user.isNew);
             done();
+        }).catch((err)=>{
+            done(err);
         });
 
     });
@@ -37,6 +43,8 @@ describe('Model User', () => {
                 assert(res === true,'Password does not match');
             });
             done();
+        }).catch((err)=>{
+            done(err);
         });
 
     });

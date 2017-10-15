@@ -6,7 +6,6 @@ module.exports = function(req,res,next) {
 
     var token = req.body.token || req.query.token || (function(){
         var authzBearer = req.headers.authorization;
-        console.log('auhtbear: '+authzBearer);
         if(authzBearer && authzBearer.split(' ')[0] === 'Bearer'){
             return authzBearer.split(' ')[1];
         }
@@ -18,7 +17,8 @@ module.exports = function(req,res,next) {
         if (jwtConfig.alg === "HS256") {
             jwt.verify(token, jwtConfig.secret, function(err, decoded) {
                 if (err) { //failed verification.
-                    return res.json({"error": true, "message": "Authorization failed"});
+
+                    return res.status(401).json({"error": true, "message": "Authorization failed"});
                 }
                 req.tokenDecoded = decoded;
                 next(); //no error, proceed
@@ -30,7 +30,8 @@ module.exports = function(req,res,next) {
                 var cert = fs.readFileSync(__dirname + '/../etc/certs/' + filename);
                 jwt.verify(token, cert, function(err, decoded) {
                     if (err) { //failed verification.
-                        return res.json({"error": true, 'message': "Authorization failed"});
+
+                        return res.status(401).json({"error": true, 'message': "Authorization failed"});
                     }
                     req.tokenDecoded = decoded;
                     next(); //no error, proceed
@@ -42,7 +43,7 @@ module.exports = function(req,res,next) {
         }
     } else {
         // forbidden without token
-        return res.status(403).send({
+        return res.status(401).send({
             "error": true,
             "message": "Authorization failed."
         });
