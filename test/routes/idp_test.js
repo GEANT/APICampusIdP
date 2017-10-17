@@ -152,6 +152,12 @@ describe('API /idp', () => {
                         }
                     });
             });
+            xit('incorrect input #1', (done) => {
+
+            });
+            xit('incorrect input #2', (done) => {
+
+            });
             xit('correct input but IDP already exists ', (done) => {
                 done();
             });

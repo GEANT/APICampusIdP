@@ -46,7 +46,4 @@ UserSchema.methods.checkPassword = function (strToCheck, cb) {
 
 };
 
-UserSchema.methods.testPassword = function (strToCheck) {
-    return this.password === strToCheck;
-};
 module.exports = mongoose.model('User', UserSchema);
