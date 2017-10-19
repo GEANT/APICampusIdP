@@ -117,7 +117,7 @@ var serviceValidatorRequest = function (req, res, next) {
     let reqContext = req.body['@context'];
     if (_.isString(reqContext)) {
         if (reqContext !== serviceContext) {
-            return res.status(400).json({'error': true, 'message': 'Invalid @context in the request'});
+            return res.status(429).json({'error': true, 'message': 'Invalid @context in the request'});
         }
         else {
             req.body['@context'] = context;
@@ -161,7 +161,7 @@ var serviceValidatorRequest = function (req, res, next) {
 
     }).catch(function (error) {
         console.log('Error catch: ' + error);
-        return res.status(400).json({'error': true, 'message': 'Invalid request : ' + error});
+        return res.status(422).json({'error': true, 'message': 'Invalid request : ' + error});
     });
 
 
