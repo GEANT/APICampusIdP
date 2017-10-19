@@ -12,6 +12,7 @@ const sampleData = require('../sample_data');
 const sampleUser = sampleData.sampleUser;
 const validUserInput = sampleData.validUserInput;
 const newIDPConfInput = sampleData.newIDPConfInput;
+const invalidIDPConfInput_1 = sampleData.invalidIDPConfInput_1;
 
 
 let invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ';
@@ -21,6 +22,9 @@ describe('API /idp', () => {
 
     before((done) => {
         User.find().remove(done);
+    });
+    before((done) => {
+        Provider.find().remove(done);
     });
     before((done) => {
         mongoose.connection.collections.users.drop(() => {
@@ -62,18 +66,9 @@ describe('API /idp', () => {
     });
 
 
-    before(() => {
-        console.log('BEFORE 2');
-    });
-
     context('GET /idp/:name/:filter', () => {
 
-        beforeEach(() => {
-            console.log('BEFOREEACH 2');
-        });
-        before(() => {
-            console.log('BEFORE 3');
-        });
+
         xit('GET /idp/:name with missing JWT', (done) => {
             done();
         });
@@ -135,7 +130,7 @@ describe('API /idp', () => {
         });
 
         context('POST /idp with correct JWT : Scenarios', () => {
-            it('Request with usupported media type', (done) => {
+            xit('Request with usupported media type', (done) => {
                 request(app)
                     .post('/idp')
                     .set('Authorization', 'Bearer ' + validToken)
@@ -152,11 +147,84 @@ describe('API /idp', () => {
                         }
                     });
             });
-            xit('correct input but IDP already exists ', (done) => {
+            it('#01 : syntaticaly incorrect input', (done) => {
+                request(app)
+                    .post('/idp')
+                    .set('Authorization', 'Bearer ' + validToken)
+                    .set('Content-type', 'application/ld+json')
+                    .send('sdf }')
+                    .expect(400)
+                    .end((err, res) => {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            done();
+                        }
+                    });
+
+
+            });
+            it('#02 incorrect input', (done) => {
+                request(app)
+                    .post('/idp')
+                    .set('Authorization', 'Bearer ' + validToken)
+                    .set('Content-type', 'application/ld+json')
+                    .send(invalidIDPConfInput_1)
+                    .expect(422)
+                    .end((err, res) => {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            done();
+                        }
+                    });
+
+
+            });
+            xit('#03 incorrect input', (done) => {
+
+            });
+            xit('#04 correct input but IDP already exists ', (done) => {
                 done();
             });
-            xit('correct input data - expect successful creation', (done) => {
-                done();
+            it('correct input data - expect successful creation', (done) => {
+                request(app)
+                    .post('/idp')
+                    .set('Authorization', 'Bearer ' + validToken)
+                    .set('Content-type', 'application/ld+json')
+                    .send(newIDPConfInput)
+                    .expect(200)
+                    .end((err, res) => {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            done();
+                        }
+                    });
+
+            });
+            // depends on previous test
+            it('correct input data - expect error as IDP already exist', (done) => {
+                request(app)
+                    .post('/idp')
+                    .set('Authorization', 'Bearer ' + validToken)
+                    .set('Content-type', 'application/ld+json')
+                    .send(newIDPConfInput)
+                    .expect(409)
+                    .end((err, res) => {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            expect(res.body.error).to.equal(true);
+                            expect(res.body.message).to.equal('host already exist');
+                            done();
+                        }
+                    });
+
             });
         });
 

@@ -4,7 +4,7 @@ const app = require('../../app');
 const mongoose = require('mongoose');
 const User = require('../../models/User');
 
-describe('Authentication', () => {
+describe('Authentication and request for JWT', () => {
 
     let fakeUser = {
         name: 'fakeuser',
@@ -48,55 +48,72 @@ describe('Authentication', () => {
     });
 
 
+    describe('Authentication',()=>{
+        describe('For incorrect data/request', () => {
+            it('reject a GET', (done) => {
+                request(app)
+                    .get('/authenticate')
+                    .expect(404)
+                    .end((err, res) => {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            done();
+                        }
+                    })
+            });
 
-    describe('For incorrect data/request', () => {
-        it('reject a GET', (done) => {
-            request(app)
-                .get('/authenticate')
-                .expect(404)
-                .end((err, res) => {
-                    if (err) {
-                        done(err);
-                    }
-                    else {
-                        done();
-                    }
-                })
+            it('401 for empty POST request', (done) => {
+                request(app)
+                    .post('/authenticate')
+                    .expect(401)
+                    .end((err, res) => {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            done();
+                        }
+                    });
+
+            });
+            it('authentication failed for fake user', (done) => {
+                request(app)
+                    .post('/authenticate')
+                    .send(fakeUser)
+                    .expect(401)
+                    .end((err, res) => {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            done();
+                        }
+                    });
+            });
+            it('authentication failed for disabled user', (done) => {
+                request(app)
+                    .post('/authenticate')
+                    .send(disabledUser)
+                    .expect(401)
+                    .end((err, res) => {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            done();
+                        }
+                    });
+            });
         });
 
-        it('401 for empty POST request', (done) => {
+        it('authentication success', (done) => {
             request(app)
                 .post('/authenticate')
-                .expect(401)
-                .end((err, res) => {
-                    if (err) {
-                        done(err);
-                    }
-                    else {
-                        done();
-                    }
-                });
-
-        });
-        it('authentication failed for fake user', (done) => {
-            request(app)
-                .post('/authenticate')
-                .send(fakeUser)
-                .expect(401)
-                .end((err, res) => {
-                    if (err) {
-                        done(err);
-                    }
-                    else {
-                        done();
-                    }
-                });
-        });
-        it('authentication failed for disabled user', (done) => {
-            request(app)
-                .post('/authenticate')
-                .send(disabledUser)
-                .expect(401)
+                .send(properUser)
+                .expect(200)
+                .expect("Content-type", /json/)
                 .end((err, res) => {
                     if (err) {
                         done(err);
@@ -109,8 +126,9 @@ describe('Authentication', () => {
     });
 
 
-    describe('For correct data and request', () => {
-        it('authentication success', (done) => {
+
+    describe('JWT check for successfule authn', () => {
+        xit('authentication success + jwt check', (done) => {
             request(app)
                 .post('/authenticate')
                 .send(properUser)
