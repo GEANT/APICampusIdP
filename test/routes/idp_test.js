@@ -84,62 +84,63 @@ describe('API /idp', () => {
         })
     });
     context('Create new IDP', () => {
-        it('POST /idp with missing Authorization header', (done) => {
-            request(app)
-                .post('/idp')
-                .expect(401)
-                .end((err, res) => {
-                    if (err) {
-                        done(err);
-                    }
-                    else {
-                        done();
-                    }
-                });
+        context('Authorization', (done) => {
+            it('POST /idp with missing Authorization header', (done) => {
+                request(app)
+                    .post('/idp')
+                    .expect(401)
+                    .end((err, res) => {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            done();
+                        }
+                    });
 
+            });
+            it('POST /idp by providing Authorization header but missing Bearer token', (done) => {
+                request(app)
+                    .post('/idp')
+                    .set('Authorization', 'Bddd')
+                    .expect(401)
+                    .end((err, res) => {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            done();
+                        }
+                    });
+
+            });
+            it('POST /idp with incorrect Bearer token (invalid JWT)', (done) => {
+                request(app)
+                    .post('/idp')
+                    .set('Authorization', 'Bearer ' + invalidToken)
+                    .expect(401)
+                    .end((err, res) => {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            done();
+                        }
+                    });
+
+            });
         });
-        it('POST /idp by providing Authorization header but missing Bearer token', (done) => {
-            request(app)
-                .post('/idp')
-                .set('Authorization', 'Bddd')
-                .expect(401)
-                .end((err, res) => {
-                    if (err) {
-                        done(err);
-                    }
-                    else {
-                        done();
-                    }
-                });
-
-        });
-        it('POST /idp with incorrect Bearer token (invalid JWT)', (done) => {
-            request(app)
-                .post('/idp')
-                .set('Authorization', 'Bearer ' + invalidToken)
-                .expect(401)
-                .end((err, res) => {
-                    if (err) {
-                        done(err);
-                    }
-                    else {
-                        done();
-                    }
-                });
-
-        });
-
         context('POST /idp with correct JWT : Scenarios', () => {
-            xit('Request with usupported media type', (done) => {
+
+            it('#01 Request with usupported media type', (done) => {
                 request(app)
                     .post('/idp')
                     .set('Authorization', 'Bearer ' + validToken)
                     .set('Content-type', 'applicationf/ld+json')
-                    .send('{ "sdfsdf": "ddd"}')
+                    .send(newIDPConfInput)
                     .expect(415)
                     .end((err, res) => {
                         if (err) {
-                            console.log('F@ ' + JSON.stringify(JSON.parse(res.text)));
                             done(err);
                         }
                         else {
@@ -147,7 +148,7 @@ describe('API /idp', () => {
                         }
                     });
             });
-            it('#01 : syntaticaly incorrect input', (done) => {
+            it('#02 : syntaticaly incorrect input', (done) => {
                 request(app)
                     .post('/idp')
                     .set('Authorization', 'Bearer ' + validToken)
@@ -165,7 +166,7 @@ describe('API /idp', () => {
 
 
             });
-            it('#02 incorrect input', (done) => {
+            it('#03 incorrect input', (done) => {
                 request(app)
                     .post('/idp')
                     .set('Authorization', 'Bearer ' + validToken)
@@ -183,13 +184,13 @@ describe('API /idp', () => {
 
 
             });
-            xit('#03 incorrect input', (done) => {
+            xit('#04 incorrect input', (done) => {
 
             });
-            xit('#04 correct input but IDP already exists ', (done) => {
+            xit('#05 correct input but IDP already exists ', (done) => {
                 done();
             });
-            it('correct input data - expect successful creation', (done) => {
+            it('#06 correct input data - expect successful creation', (done) => {
                 request(app)
                     .post('/idp')
                     .set('Authorization', 'Bearer ' + validToken)
@@ -201,13 +202,15 @@ describe('API /idp', () => {
                             done(err);
                         }
                         else {
+                            expect(res.body.error).to.equal(false);
+                            expect(res.body.message).to.equal('request received');
                             done();
                         }
                     });
 
             });
             // depends on previous test
-            it('correct input data - expect error as IDP already exist', (done) => {
+            it('#07 correct input data - expect error as IDP already exist', (done) => {
                 request(app)
                     .post('/idp')
                     .set('Authorization', 'Bearer ' + validToken)

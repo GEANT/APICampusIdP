@@ -1,12 +1,17 @@
 var mongoose = require('mongoose');
 var version = require('mongoose-version');
 var _ = require('lodash');
+var konsole = require('../libs/konsole');
 var Schema = mongoose.Schema;
 var ProviderSchema = new Schema({
     name: {
         type: String,
         required: true,
         index: {unique: false}
+    },
+    status: {
+      type: String,
+      required: true
     },
     configuration : {
         type: Object
@@ -39,7 +44,7 @@ ProviderSchema.plugin(version, {
 ProviderSchema.pre('save', function (next) {
     var provider = this;
     provider.updatedAt = Date.now();
-    console.log('pre saving provider: ' + _.now());
+    konsole('pre saving provider: ' + _.now());
     next();
 
 });

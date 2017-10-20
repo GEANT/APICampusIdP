@@ -1,3 +1,5 @@
+const konsole = require('./konsole');
+
 var isPropertyArray = function isArray(obj) {
     return !!obj && obj.constructor === Array;
 };
@@ -24,12 +26,12 @@ var convertToById = function (c) {
 }
 
 function validateServiceDescription(b) {
-    console.log(b.entityID);
+    konsole(b.entityID);
     if (!b.entityID) {
         return false;
     }
     if (!b.idpsso) {
-        console.log('missing idpsso');
+        konsole('missing idpsso');
         return false;
     }
 
@@ -42,36 +44,36 @@ var validateConfigs = function(b) {
     var zLenght = b.length;
     var serviceDescripionSet = false;
 
-    console.log('Number of elements in configs: ' + zLenght);
+    konsole('Number of elements in configs: ' + zLenght);
     var converted = convertToById(b);
     var objElement, objType;
     for (var i = 0; i < zLenght; i++) {
-        console.log('...checking of element ' + i);
+        konsole('...checking of element ' + i);
         objElement = b[i];
         objType = objElement['@type'];
         if (mainCnfTypes.indexOf(objType) > -1) {
-            console.log('ZUPA @type is valid of object is "' + objType + '"');
+            konsole('ZUPA @type is valid of object is "' + objType + '"');
         }
         else {
-            console.log('ZUPA @type is INvalid of object is "' + objType + '"');
+            konsole('ZUPA @type is INvalid of object is "' + objType + '"');
             return false;
         }
         if (objType === 'ServiceDescription') {
-            console.log('...proceeding for ServiceDecription ::: ' + serviceDescripionSet);
+            konsole('...proceeding for ServiceDecription ::: ' + serviceDescripionSet);
             if (serviceDescripionSet === true) {
-                console.log('ServiceDescription already set');
+                konsole('ServiceDescription already set');
                 return false;
             }
             serviceDescripionSet = true;
             if (!validateServiceDescription(objElement)) {
-                console.log('Invalid property ServiceDescription');
+                konsole('Invalid property ServiceDescription');
                 return false;
             }
         }
     }
 
 
-    console.log('convertToById:: ' + JSON.stringify(converted));
+    konsole('convertToById:: ' + JSON.stringify(converted));
 
 
     return true;
@@ -85,27 +87,27 @@ var validateIDPConf = function (a) {
     }
     // check apiVersion
     if (!a.apiVersion === '1') {
-        console.log('apiVersion incorrect: ' + a.apiVersion + ' , expected 1');
+        konsole('apiVersion incorrect: ' + a.apiVersion + ' , expected 1');
         return false;
     }
     // check if property 'configs' exists and is array type
     if (!a.configs || !isPropertyArray(a.configs)) {
-        console.log('missing \'configs\'');
+        konsole('missing \'configs\'');
         return false;
     }
 
     // proceed 'configs' validation
     if (!validateConfigs(a.configs)) {
-        console.log('configs are invalid');
+        konsole('configs are invalid');
         return false;
     }
     else {
-        console.log('\'configs\' is type of: ' + typeof a.configs + '; ' + a.configs.constructor + '; ' + a.constructor);
+        konsole('\'configs\' is type of: ' + typeof a.configs + '; ' + a.configs.constructor + '; ' + a.constructor);
     }
 
 
     return true;
-}
+};
 
 module.exports.validateIDPConf = validateIDPConf;
 

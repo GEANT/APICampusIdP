@@ -1,8 +1,8 @@
-var jwt = require('jsonwebtoken');
-var fs = require('fs');
-
+const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const konsole = require('./konsole');
 module.exports.aclCheck = function(req,res,next) {
-    console.log('checkAcl triggered');
+    konsole('checkAcl triggered');
     /**
      * @todo finish
      */

@@ -1,10 +1,11 @@
 var file = require('fs');
 var nconf = require('nconf');
+const konsole = require('../konsole');
 function Config(){
 
     nconf.argv().env("_");
     var environment = nconf.get("NODE:ENV") || "development";
-    console.log('NODE:ENV set to: '+environment);
+    konsole('NODE:ENV set to: '+environment);
     nconf.file(environment,__dirname+"/../../etc/"+environment+".json");
     nconf.file("default", __dirname+"/../../etc/default.json");
 

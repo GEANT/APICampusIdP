@@ -30,10 +30,9 @@ const users = require('./routes/users');
 const idp = require('./routes/idp');
 const clientapi = require('./routes/clientapi');
 const authenticate = require('./routes/authenticate');
-const protectedtest = require('./routes/protectedtest');
 const jsonldContext = require('./routes/jsonldContext');
 const apiSchema = require('./routes/apiSchema');
-
+const konsole = require('./libs/konsole');
 /**
  * config
  */
@@ -55,7 +54,9 @@ if(process.env.NODE_ENV !== 'test') {
         useMongoClient: true,
         /* other options */
     });
-}
+};
+
+
 
 
 
@@ -86,7 +87,6 @@ app.use('/users', users);
 app.use('/idp', idp);
 // client api ui
 app.use('/clientapi', clientapi);
-app.use('/protectedtest', verifyToken, protectedtest);
 
 app.use('/context', jsonldContext);
 app.use('/schema', apiSchema);

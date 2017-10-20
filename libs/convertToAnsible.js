@@ -4,6 +4,7 @@ const jsonld = require('jsonld');
 const jsonldPromises = jsonld.promises;
 var vocab = require('./apiVocab').context;
 var schema = require('./apiVocab').schema;
+const konsole = require('./konsole');
 
 var context = vocab;
 var myVocab = context['@vocab'];
@@ -14,7 +15,7 @@ const json2yaml = require('json2yaml');
 
 var translateToAnsible = function (input) {
 
-    console.log(JSON.stringify(input));
+    konsole(JSON.stringify(input));
     return new Promise(function(resolve,reject){
         let frame = {
             "@context" : vocab,

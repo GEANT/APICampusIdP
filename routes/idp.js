@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const _ = require('lodash');
+const konsole = require('../libs/konsole');
 const base64url = require('base64url');
 const Provider = require('../models/Provider');
 const mongoose = require('mongoose');
@@ -28,11 +29,12 @@ var generatesYamlFiles = function (cnf) {
  * create new service
  */
 router.post('/', verifyToken, validateReq, function (req, res) {
-    console.log('----------START REQUEST----------------');
+    konsole('----------START REQUEST----------------');
 
 
-    console.log('res ' + JSON.stringify(req.jsonldexpanded));
-    console.log(`flatten: ${JSON.stringify(req.jsonflatten)}`);
+
+    konsole('res ' + JSON.stringify(req.jsonldexpanded));
+    konsole(`flatten: ${JSON.stringify(req.jsonflatten)}`);
 
     if (typeof req.inputhostname === 'undefined') {
         return res.status(404).json({"error": true, "message": "Missing hostname"});
@@ -45,6 +47,7 @@ router.post('/', verifyToken, validateReq, function (req, res) {
         if (doc === null) {
             let newProvider = new Provider({
                 name: req.inputhostname,
+                status: 'pending',
                 configuration: {
                     format: "flatcompact",
                     data: req.jsoncompactflatten,
@@ -53,7 +56,16 @@ router.post('/', verifyToken, validateReq, function (req, res) {
             });
             let promise = newProvider.save();
             promise.then(function (doc) {
-                res.json(doc);
+                //res.json(doc);
+                res.json({
+                    'error' : false,
+                    'message': 'request received'
+                });
+            }, function(err){
+                 res.status(500).json({
+                    'error' : true,
+                    'message': err
+                });
             });
 
         }
@@ -65,7 +77,7 @@ router.post('/', verifyToken, validateReq, function (req, res) {
     });
 
 
-    console.log('----------END REQUEST------------');
+    konsole('----------END REQUEST------------');
 
 });
 router.post('/:name', verifyToken, validateReq,
@@ -88,7 +100,7 @@ router.post('/:name', verifyToken, validateReq,
                 else {
                     res.status(404).json({"error": true, "message": "Not found"});
                 }
-                console.log(result);
+                konsole(result);
             }
             else {
                 res.send(err);
@@ -100,7 +112,7 @@ router.post('/:name', verifyToken, validateReq,
 
 
 router.get('/:name/:filter', verifyToken, function (req, res, next) {
-    console.log('nameIDP: ' + JSON.stringify(req.params));
+    konsole('nameIDP: ' + JSON.stringify(req.params));
 
     let name = req.params.name;
     let detail = req.params.filter;
@@ -122,8 +134,7 @@ router.get('/:name/:filter', verifyToken, function (req, res, next) {
                     });
 
 
-                    //
-                    // console.log(`${convertedToAnsible}`);
+
 
 
                     res.json(filteredRes.configuration)
@@ -136,7 +147,6 @@ router.get('/:name/:filter', verifyToken, function (req, res, next) {
             else {
                 res.status(404).json({"error": true, "message": "Not found"});
             }
-            // console.log(`REsult: ${result}`);
         }
         else {
             res.send(err);

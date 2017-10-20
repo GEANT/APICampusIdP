@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const jsonld = require('jsonld');
 const jsonldPromises = jsonld.promises;
-
+const konsole = require('./konsole');
 const vocab = require('./apiVocab').context;
 const schema = require('./apiVocab').schema;
 
@@ -23,7 +23,7 @@ var traversalWalk = function (input) {
 var hideSensitive = function (inputData) {
 
     if (inputData.configuration && inputData.configuration.data && inputData.configuration.data['@graph']) {
-        console.log(`>>>>>>>> @graph FOUND`);
+        konsole(`>>>>>>>> @graph FOUND`);
        _.find(inputData.configuration.data['@graph'], function (o) {
             if(o.hasOwnProperty('privateKey')  && _.isString(o.privateKey)) {
                 o.privateKey = { "@type": "hidden"};
@@ -41,7 +41,7 @@ var hideSensitive = function (inputData) {
 
     }
     else {
-        console.log(`>>>>>>>> @graph NOT FOUND`);
+        konsole(`>>>>>>>> @graph NOT FOUND`);
     }
 
     return inputData;
