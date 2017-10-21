@@ -36,7 +36,7 @@ const konsole = require('./libs/konsole');
 /**
  * config
  */
-const appConfig = require('./libs/config/index');
+const appConfig = require('./libs/serviceConfig');
 
 const app = express();
 app.set('appConfig', appConfig);

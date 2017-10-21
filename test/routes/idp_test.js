@@ -13,6 +13,7 @@ const sampleUser = sampleData.sampleUser;
 const validUserInput = sampleData.validUserInput;
 const newIDPConfInput = sampleData.newIDPConfInput;
 const invalidIDPConfInput_1 = sampleData.invalidIDPConfInput_1;
+const invalidIDPConfInput_2 = sampleData.invalidIDPConfInput_2;
 
 
 let invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ';
@@ -184,10 +185,25 @@ describe('API /idp', () => {
 
 
             });
-            xit('#04 incorrect input', (done) => {
+            it('#04 incorrect input - missing hostname', (done) => {
+                request(app)
+                    .post('/idp')
+                    .set('Authorization', 'Bearer ' + validToken)
+                    .set('Content-type', 'application/ld+json')
+                    .send(invalidIDPConfInput_2)
+                    .expect(400)
+                    .end((err, res) => {
+
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            done();
+                        }
+                    });
 
             });
-            xit('#05 correct input but IDP already exists ', (done) => {
+            xit('#05  ', (done) => {
                 done();
             });
             it('#06 correct input data - expect successful creation', (done) => {

@@ -37,7 +37,7 @@ router.post('/', verifyToken, validateReq, function (req, res) {
     konsole(`flatten: ${JSON.stringify(req.jsonflatten)}`);
 
     if (typeof req.inputhostname === 'undefined') {
-        return res.status(404).json({"error": true, "message": "Missing hostname"});
+        return res.status(400).json({"error": true, "message": "Missing hostname"});
     }
 
     let query = Provider.findOne({name: req.inputhostname});
