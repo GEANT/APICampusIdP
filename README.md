@@ -2,6 +2,7 @@
 API for the CampusIdP
 
 
+
 Schema:
 ```javascript
 {
