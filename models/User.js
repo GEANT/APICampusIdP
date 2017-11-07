@@ -14,7 +14,7 @@ var UserSchema = new Schema({
         required: true
     },
     email: String,
-    disabled: {
+    enabled: {
         type: Boolean,
         default: false
     }

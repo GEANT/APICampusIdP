@@ -4,10 +4,11 @@ const konsole = require('./konsole');
 function Config(){
 
     nconf.argv().env("_");
-    var environment = nconf.get("NODE:ENV") || "development";
-    konsole('NODE:ENV set to: '+environment);
+    const environment = nconf.get("NODE:ENV") || "development";
+    konsole('NODE:ENV set to: '+environment,true);
     nconf.file(environment,__dirname+"/../etc/"+environment+".json");
     nconf.file("default", __dirname+"/../etc/default.json");
+
 
 }
 

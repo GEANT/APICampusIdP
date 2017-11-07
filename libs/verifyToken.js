@@ -1,46 +1,39 @@
-var jwt = require('jsonwebtoken');
-var fs = require('fs');
+const jwt = require('jsonwebtoken');
+const fs = require('fs');
 
-module.exports = function(req,res,next) {
-    var jwtConfig = req.app.get('appConfig').get('jwt');
-
-    var token = req.body.token || req.query.token || (function(){
+module.exports = function (req, res, next) {
+    const jwtConfig = req.app.get('appConfig').get('jwt');
+    const iss = jwtConfig.iss;
+    var token = req.body.token || req.query.token || (function () {
         var authzBearer = req.headers.authorization;
-        if(authzBearer && authzBearer.split(' ')[0] === 'Bearer'){
+        if (authzBearer && authzBearer.split(' ')[0] === 'Bearer') {
             return authzBearer.split(' ')[1];
         }
         return null;
     }).call();
 
     if (token) {
-
+        let secret;
         if (jwtConfig.alg === "HS256") {
-            jwt.verify(token, jwtConfig.secret, function(err, decoded) {
-                if (err) { //failed verification.
-
-                    return res.status(401).json({"error": true, "message": "Authorization failed"});
-                }
-                req.tokenDecoded = decoded;
-                next(); //no error, proceed
-            });
+            secret = jwtConfig.secret;
         }
-        else if (jwtConfig.alg === "RS256") {
-            if (jwtConfig.privateKey) {
-                var filename = jwtConfig.publicKey;
-                var cert = fs.readFileSync(__dirname + '/../etc/certs/' + filename);
-                jwt.verify(token, cert, function(err, decoded) {
-                    if (err) { //failed verification.
-
-                        return res.status(401).json({"error": true, 'message': "Authorization failed"});
-                    }
-                    req.tokenDecoded = decoded;
-                    next(); //no error, proceed
-                });
-            }
-            else {
-                throw new Error('privateKey in config is not defined');
-            }
+        else if (jwtConfig.alg === "RS256" && jwtConfig.privateKey && jwtConfig.publicKey) {
+            let filename = jwtConfig.publicKey;
+            secret = fs.readFileSync(__dirname + '/../etc/certs/' + filename);
         }
+        else {
+            throw new Error('privateKey in config is not defined');
+        }
+
+        jwt.verify(token, secret, { algorithms: [jwtConfig.alg], issuer: jwtConfig.iss}, function (err, decoded) {
+            if (err) { //failed verification.
+
+                return res.status(401).json({"error": true, "message": "Authorization failed"});
+            }
+            req.tokenDecoded = decoded;
+            next(); //no error, proceed
+        });
+
     } else {
         // forbidden without token
         return res.status(401).send({

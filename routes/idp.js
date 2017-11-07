@@ -33,6 +33,7 @@ router.post('/', verifyToken, validateReq, function (req, res) {
 
 
 
+
     konsole('res ' + JSON.stringify(req.jsonldexpanded));
     konsole(`flatten: ${JSON.stringify(req.jsonflatten)}`);
 
@@ -56,6 +57,8 @@ router.post('/', verifyToken, validateReq, function (req, res) {
             });
             let promise = newProvider.save();
             promise.then(function (doc) {
+
+
                 //res.json(doc);
                 res.json({
                     'error' : false,

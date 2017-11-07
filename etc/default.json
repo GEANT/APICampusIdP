@@ -1,6 +1,6 @@
 {
   "application" : "campusIDP",
-  "baseUrl" : "http://example.com:2456/",
+  "baseUrl" : "http://janul.bounceme.net:3000/",
   "http": {
     "port" : "2456"
   },
@@ -12,6 +12,7 @@
     "dbname": "dbname"
   },
   "jwt": {
+    "iss": "https://issuer.example.com",
     "expiresInSeconds": 36000,
     "alg": "RS256",
     "secret": "1234",

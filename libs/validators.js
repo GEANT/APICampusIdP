@@ -1,12 +1,12 @@
 const _ = require('lodash');
-var jsonld = require('jsonld');
-var jsonldPromises = jsonld.promises;
+const jsonld = require('jsonld');
+const jsonldPromises = jsonld.promises;
 
-var vocab = require('./apiVocab').context;
-var schema = require('./apiVocab').schema;
+const vocab = require('./apiVocab').context;
+const schema = require('./apiVocab').schema;
 const konsole = require('./konsole');
-var context = vocab;
-var myVocab = context['@vocab'];
+const context = vocab;
+const myVocab = context['@vocab'];
 
 
 var genKeyWithPref = function (key) {

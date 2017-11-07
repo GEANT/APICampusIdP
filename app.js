@@ -20,7 +20,7 @@ var accessLogStream = rfs('access.log', {
 });
 
 
-var verifyToken = require('./libs/verifyToken');
+const verifyToken = require('./libs/verifyToken');
 
 /**
  * routes
