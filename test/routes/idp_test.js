@@ -7,6 +7,7 @@ const assert = require('assert');
 const mongoose = require('mongoose');
 const User = require('../../models/User');
 const Provider = require('../../models/Provider');
+const jwt = require('jsonwebtoken');
 const sampleData = require('../sample_data');
 
 const sampleUser = sampleData.sampleUser;
@@ -220,7 +221,20 @@ describe('API /idp', () => {
                         else {
                             expect(res.body.error).to.equal(false);
                             expect(res.body.message).to.equal('request received');
-                            done();
+
+                            let decodedToken = jwt.decode(validToken);
+                            let username = decodedToken.sub;
+                            let hostname = newIDPConfInput.components.web.hostname;
+                            let pQuery = Provider.findOne({name: hostname}).populate('creator');
+                            let provider = pQuery.exec();
+
+                            provider.then(p => {
+                                expect(p.creator.username).to.equal(username);
+                                done();
+                            }).catch(r => {
+                                done(r);
+                            })
+
                         }
                     });
 
