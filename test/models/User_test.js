@@ -104,7 +104,7 @@ describe("Model User", () => {
           return User.findOne({ name: sampleUser.username });
         })
         .then(u => {
-          assert(u === {});
+          assert(u === null);
           done();
         })
         .catch(err => {
