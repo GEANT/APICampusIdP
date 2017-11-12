@@ -19,7 +19,7 @@ const convertToAnsible = require('../libs/convertToAnsible').translateToYaml;
 const yaml = require('write-yaml');
 
 
-var generatesYamlFiles = function (cnf) {
+const generatesYamlFiles = function (cnf) {
 
     // generate attribute resolver part
     // go through objects and check '@type' === 'AttributeDefinition'
@@ -52,28 +52,32 @@ router.post('/', verifyToken, validateReq, function (req, res) {
         if (doc !== null) {
             return res.status(409).json({"error": true, "message": "host already exist"});
         }
+        let confVersion = uuidv1();
+       /* let providerConfig1 = new ProviderConfig_schema({
+            format: "flatcompact",
+            flatcompact: req.jsoncompactflatten,
+            ver: confVersion
+        });*/
+
         let newProvider = new Provider({
             name: req.inputhostname,
             status: 'pending',
-            configuration: {
+            configs: [{
                 format: "flatcompact",
-                data: req.jsoncompactflatten,
-                version: uuidv1()
-            }
+                flatcompact: req.jsoncompactflatten,
+                ver: confVersion
+            }]
         });
         if (user !== null) {
             newProvider.creator = user;
         }
         let sPromise = newProvider.save();
-        sPromise.then(function (doc) {
-
-
-            //res.json(doc);
+        sPromise.then((doc) => {
             res.json({
                 'error': false,
                 'message': 'request received'
             });
-        }, function (err) {
+        },  (err) => {
             res.status(500).json({
                 'error': true,
                 'message': err
@@ -97,11 +101,7 @@ router.post('/:name', verifyToken, validateReq,
         Provider.findOne({name: name}, function (err, result) {
             if (!err) {
                 if (result) {
-
-
-                    var mydata = result.data;
-
-                    res.json(mydata)
+                    res.json(result.data)
                 }
                 else {
                     res.status(404).json({"error": true, "message": "Not found"});
@@ -116,7 +116,7 @@ router.post('/:name', verifyToken, validateReq,
 );
 
 
-router.get('/:name/:filter', verifyToken, function (req, res, next) {
+router.get('/:name/:filter',   verifyToken,  function (req, res, next) {
     konsole('nameIDP: ' + JSON.stringify(req.params));
 
     let name = req.params.name;
@@ -129,17 +129,9 @@ router.get('/:name/:filter', verifyToken, function (req, res, next) {
                 if (detail === 'configuration') {
 
                     // TEST to store absible playbook
-                    let convertedToAnsible = convertToAnsible(result.configuration.data);
-                    convertedToAnsible.then(function (resolve, reject) {
-                        if (resolve) {
-
-                            // temporary test
-                            yaml.sync('zupa.yaml', resolve);
-                        }
-                    });
 
 
-                    res.json(filteredRes.configuration)
+                    res.json(filteredRes.configs)
                 }
                 else {
                     res.json(filteredRes)

@@ -3,6 +3,7 @@ const app = require('../../app');
 const request = require('supertest');
 const chai = require('chai');
 const expect = chai.expect;
+const should = chai.should();
 const assert = require('assert');
 const mongoose = require('mongoose');
 const User = require('../../models/User');
@@ -59,7 +60,7 @@ describe('API /idp', () => {
                     done(err);
                 }
                 else {
-                    var result = JSON.parse(res.text);
+                    let result = JSON.parse(res.text);
                     validToken = result.token;
                     // console.log(JSON.stringify(validToken));
                     done();
@@ -204,9 +205,7 @@ describe('API /idp', () => {
                     });
 
             });
-            xit('#05  ', (done) => {
-                done();
-            });
+            it('#05  ');
             it('#06 correct input data - expect successful creation', (done) => {
                 request(app)
                     .post('/idp')
@@ -216,26 +215,24 @@ describe('API /idp', () => {
                     .expect(200)
                     .end((err, res) => {
                         if (err) {
-                            done(err);
+                            return done(err);
                         }
-                        else {
-                            expect(res.body.error).to.equal(false);
-                            expect(res.body.message).to.equal('request received');
+                        expect(res.body.error).to.equal(false);
+                        expect(res.body.message).to.equal('request received');
 
-                            let decodedToken = jwt.decode(validToken);
-                            let username = decodedToken.sub;
-                            let hostname = newIDPConfInput.components.web.hostname;
-                            let pQuery = Provider.findOne({name: hostname}).populate('creator');
-                            let provider = pQuery.exec();
+                        let decodedToken = jwt.decode(validToken);
+                        let username = decodedToken.sub;
+                        let hostname = newIDPConfInput.components.web.hostname;
+                        let pQuery = Provider.findOne({name: hostname}).populate('creator');
+                        let provider = pQuery.exec();
 
-                            provider.then(p => {
-                                expect(p.creator.username).to.equal(username);
-                                done();
-                            }).catch(r => {
-                                done(r);
-                            })
-
-                        }
+                        provider.then(p => {
+                            expect(p.creator.username).to.equal(username);
+                            should.exist(p.configs);
+                            let configs = p.configs;
+                            configs.should.be.an('array');
+                            done();
+                        }).catch(err => done(err))
                     });
 
             });
@@ -257,31 +254,18 @@ describe('API /idp', () => {
                             done();
                         }
                     });
-
             });
         });
 
 
     });
     context('Update IDP', () => {
-        xit('POST /idp with missing :name', (done) => {
-
-        });
-        xit('POST /idp/:name with missing JWT', (done) => {
-            done();
-        });
-        xit('POST /idp/:name with incorrect JWT', (done) => {
-            done();
-        });
-        xit('POST /idp/:name with correct JWT and incorrect data', (done) => {
-            done();
-        });
-        xit('POST /idp/:name with correct JWT and input data but such IDP does not exist', (done) => {
-            done();
-        });
-        xit('POST /idp/:name with correct JWT and input data - expect successful update', (done) => {
-            done();
-        });
+        it('POST /idp with missing :name');
+        it('POST /idp/:name with missing JWT');
+        it('POST /idp/:name with incorrect JWT');
+        it('POST /idp/:name with correct JWT and incorrect data');
+        it('POST /idp/:name with correct JWT and input data but such IDP does not exist');
+        it('POST /idp/:name with correct JWT and input data - expect successful update');
     });
 
 });

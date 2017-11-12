@@ -27,10 +27,10 @@ router.post("/", function (req, res) {
             } else {
                 user.checkPassword(req.body.password, function (err, isMatch) {
                     if (isMatch && !err) {
-                        var data = {
+                        let data = {
                             username: name
                         };
-                        var token;
+                        let token;
                         if (jwtConfig.alg === "HS256") {
                             token = jwt.sign(
                                 {
@@ -45,8 +45,8 @@ router.post("/", function (req, res) {
                             );
                         } else if (jwtConfig.alg === "RS256") {
                             if (jwtConfig.privateKey) {
-                                var filename = jwtConfig.privateKey;
-                                var cert = fs.readFileSync(
+                                const filename = jwtConfig.privateKey;
+                                const cert = fs.readFileSync(
                                     __dirname + "/../etc/certs/" + filename
                                 );
                                 token = jwt.sign(
