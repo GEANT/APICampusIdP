@@ -53,11 +53,11 @@ router.post('/', verifyToken, validateReq, function (req, res) {
             return res.status(409).json({"error": true, "message": "host already exist"});
         }
         let confVersion = uuidv1();
-       /* let providerConfig1 = new ProviderConfig_schema({
-            format: "flatcompact",
-            flatcompact: req.jsoncompactflatten,
-            ver: confVersion
-        });*/
+        /* let providerConfig1 = new ProviderConfig_schema({
+             format: "flatcompact",
+             flatcompact: req.jsoncompactflatten,
+             ver: confVersion
+         });*/
 
         let newProvider = new Provider({
             name: req.inputhostname,
@@ -77,7 +77,7 @@ router.post('/', verifyToken, validateReq, function (req, res) {
                 'error': false,
                 'message': 'request received'
             });
-        },  (err) => {
+        }, (err) => {
             res.status(500).json({
                 'error': true,
                 'message': err
@@ -115,10 +115,25 @@ router.post('/:name', verifyToken, validateReq,
     }
 );
 
+router.get('/:name', verifyToken, function (req, res) {
+    let name = req.params.name;
 
-router.get('/:name/:filter',   verifyToken,  function (req, res, next) {
-    konsole('nameIDP: ' + JSON.stringify(req.params));
+    Provider.findOne({'name': name}).then(
+        result => {
+            if(result === null){
+                res.status(404).json({"error": true, "message": "Not found"});
+            }
+            else {
+                res.json(result);
+            }
+        }
+    ).catch(err => {
+        res.json(err);
+    });
+});
 
+
+router.get('/:name/:filter', verifyToken, function (req, res, next) {
     let name = req.params.name;
     let detail = req.params.filter;
 

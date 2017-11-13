@@ -21,7 +21,7 @@ const invalidIDPConfInput_2 = sampleData.invalidIDPConfInput_2;
 let invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ';
 let validToken;
 
-describe('API /idp', () => {
+describe('/idp', () => {
 
     before((done) => {
         User.find().remove(done);
@@ -72,19 +72,50 @@ describe('API /idp', () => {
     context('GET /idp/:name/:filter', () => {
 
 
-        xit('GET /idp/:name with missing JWT', (done) => {
-            done();
+        it('#01 GET /idp/:name with missing JWT', (done) => {
+            request(app)
+                .get("/idp/anything")
+                .expect(401)
+                .end((err, res) => {
+                    if (err) {
+                        done(err);
+                    }
+                    else {
+                        done();
+                    }
+                });
         });
-        xit('GET /idp/:name with incorrect JWT', (done) => {
-            done();
+        it('#02 GET /idp/:name/:filter with missing JWT', (done) => {
+            request(app)
+                .get("/idp/anything/configs")
+                .expect(401)
+                .end((err, res) => {
+                    if (err) {
+                        done(err);
+                    }
+                    else {
+                        done();
+                    }
+                });
         });
-        xit('GET /idp/:name existing IDP with correct JWT', (done) => {
-            done();
-        });
-        xit('GET /idp/:name where IDP does not exist', (done) => {
 
-            done();
-        })
+        it('#03 GET /idp/:name with correct JWT but idp doesnt exist', (done) => {
+            request(app)
+                .get("/idp/anything")
+                .set('Authorization', 'Bearer ' + validToken)
+                .set('Content-type', 'application/ld+json')
+                .expect(404)
+                .end((err, res) => {
+                    if (err) {
+                        done(err);
+                    }
+                    else {
+                        done();
+                    }
+                });
+        });
+        it('#04 GET /idp/:name existing IDP with correct JWT but with user has no rights');
+        it('#05 GET /idp/:name - jwt valid, idp exists, user has right to view');
     });
     context('Create new IDP', () => {
         context('Authorization', (done) => {
