@@ -12,7 +12,9 @@ const jwt = require('jsonwebtoken');
 const sampleData = require('../sample_data');
 
 const sampleUser = sampleData.sampleUser;
+const sampleUser2 = sampleData.sampleUser2;
 const validUserInput = sampleData.validUserInput;
+const validUserInput2 = sampleData.validUserInput2;
 const newIDPConfInput = sampleData.newIDPConfInput;
 const invalidIDPConfInput_1 = sampleData.invalidIDPConfInput_1;
 const invalidIDPConfInput_2 = sampleData.invalidIDPConfInput_2;
@@ -20,6 +22,7 @@ const invalidIDPConfInput_2 = sampleData.invalidIDPConfInput_2;
 
 let invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ';
 let validToken;
+let validTokenUser2;
 
 describe('/idp', () => {
 
@@ -46,7 +49,13 @@ describe('/idp', () => {
             done();
         });
     });
-
+    before((done) => {
+        let user = new User(sampleUser2);
+        user.save().then(() => {
+            assert(!user.isNew);
+            done();
+        });
+    });
 
     beforeEach((done) => {
         validToken = null;
@@ -67,56 +76,27 @@ describe('/idp', () => {
                 }
             });
     });
-
-
-    context('GET /idp/:name/:filter', () => {
-
-
-        it('#01 GET /idp/:name with missing JWT', (done) => {
-            request(app)
-                .get("/idp/anything")
-                .expect(401)
-                .end((err, res) => {
-                    if (err) {
-                        done(err);
-                    }
-                    else {
-                        done();
-                    }
-                });
-        });
-        it('#02 GET /idp/:name/:filter with missing JWT', (done) => {
-            request(app)
-                .get("/idp/anything/configs")
-                .expect(401)
-                .end((err, res) => {
-                    if (err) {
-                        done(err);
-                    }
-                    else {
-                        done();
-                    }
-                });
-        });
-
-        it('#03 GET /idp/:name with correct JWT but idp doesnt exist', (done) => {
-            request(app)
-                .get("/idp/anything")
-                .set('Authorization', 'Bearer ' + validToken)
-                .set('Content-type', 'application/ld+json')
-                .expect(404)
-                .end((err, res) => {
-                    if (err) {
-                        done(err);
-                    }
-                    else {
-                        done();
-                    }
-                });
-        });
-        it('#04 GET /idp/:name existing IDP with correct JWT but with user has no rights');
-        it('#05 GET /idp/:name - jwt valid, idp exists, user has right to view');
+    beforeEach((done) => {
+        validTokenUser2 = null;
+        request(app)
+            .post('/authenticate')
+            .send(validUserInput2)
+            .expect(200)
+            .expect("Content-type", /json/)
+            .end((err, res) => {
+                if (err) {
+                    done(err);
+                }
+                else {
+                    let result = JSON.parse(res.text);
+                    validTokenUser2 = result.token;
+                    // console.log(JSON.stringify(validToken));
+                    done();
+                }
+            });
     });
+
+
     context('Create new IDP', () => {
         context('Authorization', (done) => {
             it('POST /idp with missing Authorization header', (done) => {
@@ -290,6 +270,69 @@ describe('/idp', () => {
 
 
     });
+    context('GET /idp/:name/:filter', () => {
+
+
+        it('#01 GET /idp/:name with missing JWT', (done) => {
+            request(app)
+                .get("/idp/anything")
+                .expect(401)
+                .end((err, res) => {
+                    if (err) {
+                        done(err);
+                    }
+                    else {
+                        done();
+                    }
+                });
+        });
+        it('#02 GET /idp/:name/:filter with missing JWT', (done) => {
+            request(app)
+                .get("/idp/anything/configs")
+                .expect(401)
+                .end((err, res) => {
+                    if (err) {
+                        done(err);
+                    }
+                    else {
+                        done();
+                    }
+                });
+        });
+
+        it('#03 GET /idp/:name with correct JWT but idp doesnt exist', (done) => {
+            request(app)
+                .get("/idp/fake.example.com")
+                .set('Authorization', 'Bearer ' + validToken)
+                .set('Content-type', 'application/ld+json')
+                .expect(404)
+                .end((err, res) => {
+                    if (err) {
+                        done(err);
+                    }
+                    else {
+                        done();
+                    }
+                });
+        });
+        it('#04 GET /idp/:name existing IDP with correct JWT but with user has no rights', (done) => {
+            request(app)
+                .get("/idp/idp.example.com")
+                .set('Authorization', 'Bearer ' + validTokenUser2)
+                .set('Content-type', 'application/ld+json')
+                .expect(401)
+                .end((err, res) => {
+                    if (err) {
+                        done(err);
+                    }
+                    else {
+                        done();
+                    }
+                });
+        });
+        it('#05 GET /idp/:name - jwt valid, idp exists, user has right to view');
+    });
+
     context('Update IDP', () => {
         it('POST /idp with missing :name');
         it('POST /idp/:name with missing JWT');

@@ -6,10 +6,7 @@ const fakeUserInput = {
     password: 'fakepasss'
 };
 
-const validUserInput = {
-    name: 'properuser',
-    password: 'properpassword'
-};
+
 
 const sampleUserDisabled = {
     username: 'disuser',
@@ -22,6 +19,21 @@ const sampleUser = {
     email: 'sampleuser@example.com',
     password: 'properpassword',
     enabled: true
+};
+const validUserInput = {
+    name: 'properuser',
+    password: 'properpassword'
+};
+
+const sampleUser2 = {
+    username: 'anotherproperuser',
+    email: 'anothersampleuser@example.com',
+    password: 'properpassword',
+    enabled: true
+};
+const validUserInput2 = {
+    name: 'anotherproperuser',
+    password: 'properpassword'
 };
 
 
@@ -185,6 +197,8 @@ module.exports.invalidIDPConfInput_1 = invalidIDPConfInput_1;
 module.exports.invalidIDPConfInput_2 = invalidIDPConfInput_2;
 module.exports.fakeUserInput = fakeUserInput;
 module.exports.sampleUser = sampleUser;
+module.exports.sampleUser2 = sampleUser2;
 module.exports.sampleDisabledUser = sampleUserDisabled;
 module.exports.validUserInput = validUserInput;
+module.exports.validUserInput2 = validUserInput2;
 module.exports.newIDPConfInput = newIDPConfInput;

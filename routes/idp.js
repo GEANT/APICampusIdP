@@ -91,36 +91,37 @@ router.post('/', verifyToken, validateReq, function (req, res) {
 
 });
 router.post('/:name', verifyToken, validateReq,
-    function (req, res, next) {
+    (req, res, next) => {
         let name = req.params.name;
         if (typeof req.inputhostname === 'undefined') {
             return res.status(400).json({"error": true, "message": "Missing hostname"});
         }
 
 
-        Provider.findOne({name: name}, function (err, result) {
-            if (!err) {
-                if (result) {
+        let pPromise = Provider.findOne({name: name});
+        pPromise.then(
+            (result) => {
+                if (result !== null) {
                     res.json(result.data)
                 }
                 else {
                     res.status(404).json({"error": true, "message": "Not found"});
                 }
-                konsole(result);
             }
-            else {
-                res.send(err);
-            }
+        ).catch(err => {
+            res.send(err);
         });
+
     }
 );
 
-router.get('/:name', verifyToken, function (req, res) {
+router.get('/:name', verifyToken, (req, res) => {
     let name = req.params.name;
 
-    Provider.findOne({'name': name}).then(
-        result => {
-            if(result === null){
+    let provider = Provider.findOne({name: name});
+    provider.then(
+        (result) => {
+            if (result === null) {
                 res.status(404).json({"error": true, "message": "Not found"});
             }
             else {
@@ -133,19 +134,16 @@ router.get('/:name', verifyToken, function (req, res) {
 });
 
 
-router.get('/:name/:filter', verifyToken, function (req, res, next) {
+router.get('/:name/:filter', verifyToken, (req, res, next) => {
     let name = req.params.name;
     let detail = req.params.filter;
-
-    Provider.findOne({'name': name}, function (err, result) {
-        if (!err) {
+    let pProvider = findOne({name: name});
+    pProvider.then(
+        result => {
             if (result) {
                 let filteredRes = filterOutput(result);
                 if (detail === 'configuration') {
-
-                    // TEST to store absible playbook
-
-
+                    // @todo TEST to store absible playbook
                     res.json(filteredRes.configs)
                 }
                 else {
@@ -157,10 +155,11 @@ router.get('/:name/:filter', verifyToken, function (req, res, next) {
                 res.status(404).json({"error": true, "message": "Not found"});
             }
         }
-        else {
+    ).catch(
+        err => {
             res.send(err);
-        }
-    });
+        });
+
 
 
 });
