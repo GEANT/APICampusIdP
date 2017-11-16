@@ -1,11 +1,12 @@
+'use strict';
 const express = require('express');
 const router = express.Router();
 const _ = require('lodash');
+const mongoose = require('mongoose');
 const konsole = require('../libs/konsole');
 const base64url = require('base64url');
 const Provider = require('../models/Provider');
 const User = require('../models/User');
-const mongoose = require('mongoose');
 const verifyToken = require('../libs/verifyToken');
 const vocab = require('../libs/apiVocab').context;
 const jsonld = require('jsonld');
@@ -143,7 +144,7 @@ router.get('/:name/:filter', verifyToken, (req, res, next) => {
             if (result) {
                 let filteredRes = filterOutput(result);
                 if (detail === 'configuration') {
-                    // @todo TEST to store absible playbook
+                    // @todo TEST to store ansible playbook
                     res.json(filteredRes.configs)
                 }
                 else {
