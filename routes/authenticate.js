@@ -17,13 +17,12 @@ router.post("/", function (req, res) {
     } else {
         const name = req.body.name;
         const password = req.body.password;
-
         User.findOne({username: name, enabled: true}, function (err, user) {
             if (err) return console.error(err);
             if (!user) {
                 res
                     .status(401)
-                    .send({success: false, message: "Authentication failed."});
+                    .send({success: false, message: "FAuthentication failed."});
             } else {
                 user.checkPassword(req.body.password, function (err, isMatch) {
                     if (isMatch && !err) {

@@ -30,7 +30,7 @@ module.exports = function (req, res, next) {
 
                 return res.status(401).json({"error": true, "message": "Authorization failed"});
             }
-            req.tokenDecoded = decoded;
+            res.locals.tokenDecoded = decoded;
             next(); //no error, proceed
         });
 

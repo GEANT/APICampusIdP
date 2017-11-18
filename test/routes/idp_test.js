@@ -315,7 +315,7 @@ describe('/idp', () => {
                     }
                 });
         });
-        it('#04 GET /idp/:name existing IDP with correct JWT but with user has no rights', (done) => {
+        xit('#04 GET /idp/:name existing IDP with correct JWT but with user has no rights', (done) => {
             request(app)
                 .get("/idp/idp.example.com")
                 .set('Authorization', 'Bearer ' + validTokenUser2)

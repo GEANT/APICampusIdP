@@ -20,7 +20,7 @@ const UserSchema = new Schema({
     }
 }, {collection: 'users'});
 UserSchema.pre('save', function (next) {
-    var user = this;
+    let user = this;
 
     // only hash the password if it has been modified (or is new)
     if (!user.isModified('password')) return next();

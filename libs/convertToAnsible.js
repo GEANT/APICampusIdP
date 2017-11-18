@@ -13,7 +13,7 @@ const writeData = require('write-data');
 const json2yaml = require('json2yaml');
 
 
-var translateToAnsible = function (input) {
+const translateToAnsible = function (input) {
 
     konsole(JSON.stringify(input));
     return new Promise(function(resolve,reject){
@@ -21,7 +21,7 @@ var translateToAnsible = function (input) {
             "@context" : vocab,
             "@type":  myVocab+"ServiceDescription"
         };
-        var framed = jsonldPromises.frame(input,frame);
+        const framed = jsonldPromises.frame(input,frame);
         framed.then(
             function(res,rej){
                 if(rej){

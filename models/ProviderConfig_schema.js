@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const uuidv1 = require('uuid/v1');
 
-
 const ProviderConfigSchema = new Schema({
 
     ver : {
@@ -28,3 +27,4 @@ ProviderConfigSchema.pre('save', function (next) {
     next();
 });
 module.exports = ProviderConfigSchema;
+

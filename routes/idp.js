@@ -18,6 +18,7 @@ const validateReq = require('../libs/validators').serviceValidatorRequest;
 const filterOutput = require('../libs/filterOutput').hideSensitive;
 const convertToAnsible = require('../libs/convertToAnsible').translateToYaml;
 const yaml = require('write-yaml');
+const configGenHelper = require('../libs/configGenHelper');
 
 
 const generatesYamlFiles = function (cnf) {
@@ -33,16 +34,14 @@ const generatesYamlFiles = function (cnf) {
  */
 router.post('/', verifyToken, validateReq, function (req, res) {
     konsole('----------START REQUEST----------------');
-
-
-    konsole('res ' + JSON.stringify(req.jsonldexpanded));
-    konsole(`flatten: ${JSON.stringify(req.jsonflatten)}`);
+    konsole('res ' + JSON.stringify(res.locals.jsonldexpanded));
+    konsole(`flatten: ${JSON.stringify(res.locals.jsonflatten)}`);
 
     if (typeof req.inputhostname === 'undefined') {
         return res.status(400).json({"error": true, "message": "Missing hostname"});
     }
 
-    let username = req.tokenDecoded.sub;
+    let username = res.locals.tokenDecoded.sub;
     let pQuery = Provider.findOne({name: req.inputhostname});
     let pPromise = pQuery.exec();
     let uQuery = User.findOne({username: username});
@@ -54,18 +53,12 @@ router.post('/', verifyToken, validateReq, function (req, res) {
             return res.status(409).json({"error": true, "message": "host already exist"});
         }
         let confVersion = uuidv1();
-        /* let providerConfig1 = new ProviderConfig_schema({
-             format: "flatcompact",
-             flatcompact: req.jsoncompactflatten,
-             ver: confVersion
-         });*/
-
         let newProvider = new Provider({
             name: req.inputhostname,
             status: 'pending',
             configs: [{
                 format: "flatcompact",
-                flatcompact: req.jsoncompactflatten,
+                flatcompact: res.locals.jsoncompactflatten,
                 ver: confVersion
             }]
         });
@@ -118,6 +111,7 @@ router.post('/:name', verifyToken, validateReq,
 
 router.get('/:name', verifyToken, (req, res) => {
     let name = req.params.name;
+
 
     let provider = Provider.findOne({name: name});
     provider.then(

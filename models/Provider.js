@@ -49,7 +49,7 @@ ProviderSchema.plugin(version, {
 
 });
 ProviderSchema.pre('save', function (next) {
-    var provider = this;
+    let provider = this;
     provider.updatedAt = Date.now();
     konsole('pre saving provider: ' + _.now());
     next();
