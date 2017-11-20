@@ -32,7 +32,7 @@ const generatesYamlFiles = function (cnf) {
 /**
  * create new service
  */
-router.post('/', verifyToken, validateReq, function (req, res) {
+router.post('/', verifyToken, validateReq, configGenHelper.configGen, function (req, res) {
     konsole('----------START REQUEST----------------');
     konsole('res ' + JSON.stringify(res.locals.jsonldexpanded));
     konsole(`flatten: ${JSON.stringify(res.locals.jsonflatten)}`);

@@ -1,12 +1,12 @@
 const forge = require("node-forge");
 const pki = forge.pki;
-const keyLenght = 3072;
+const keyLength = 3072;
 const min = 1;
 const max = Number.MAX_SAFE_INTEGER;
 const years = 5;
 
 const generateX509 = (attrs) => {
-    let keys = pki.rsa.generateKeyPair(keyLenght);
+    let keys = pki.rsa.generateKeyPair(keyLength);
     let cert = pki.createCertificate();
     cert.publicKey = keys.publicKey;
     cert.serialNumber = Math.floor(Math.random() * (max - min)) + min;
