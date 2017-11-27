@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/idpapi_test', {
+mongoose.connect('mongodb://idpapi_test:idpapi_test@localhost/idpapi_test', {
     useMongoClient: true
 });
 mongoose.connection

@@ -1,11 +1,11 @@
 const konsole = require('./konsole');
 
-var isPropertyArray = function isArray(obj) {
+const isPropertyArray = function isArray(obj) {
     return !!obj && obj.constructor === Array;
 };
 
 
-var mainCnfTypes = [
+const mainCnfTypes = [
     'ServiceDescription',
     'MetadataProvider',
     'DataSource',
@@ -14,16 +14,16 @@ var mainCnfTypes = [
     'DataConnector'
 ];
 // function to transform 'configs' to object where property names are '@id' from array of objects
-var convertToById = function (c) {
-    var cLen = c.length;
-    var d = {};
-    var id;
-    for (var i = 0; i < cLen; i++) {
+const convertToById = function (c) {
+    const cLen = c.length;
+    let result = {};
+    let id;
+    for (let i = 0; i < cLen; i++) {
         id = c[i]['@id'];
-        d['' + id + ''] = c[i];
+        result['' + id + ''] = c[i];
     }
-    return d;
-}
+    return result;
+};
 
 function validateServiceDescription(b) {
     konsole(b.entityID);
@@ -78,7 +78,7 @@ var validateConfigs = function(b) {
 
     return true;
 
-}
+};
 
 var validateIDPConf = function (a) {
     // check if @type of object is 'IdPConf'

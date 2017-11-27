@@ -1,9 +1,9 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 bcrypt = require('bcrypt');
     SALT_WORK_FACTOR = 10;
 
-var UserSchema = new Schema({
+const UserSchema = new Schema({
     username: {
         type: String,
         required: true,
@@ -14,13 +14,13 @@ var UserSchema = new Schema({
         required: true
     },
     email: String,
-    disabled: {
+    enabled: {
         type: Boolean,
         default: false
     }
 }, {collection: 'users'});
 UserSchema.pre('save', function (next) {
-    var user = this;
+    let user = this;
 
     // only hash the password if it has been modified (or is new)
     if (!user.isModified('password')) return next();

@@ -3,13 +3,24 @@ const app = require('../../app');
 const request = require('supertest');
 const chai = require('chai');
 const expect = chai.expect;
-const assert = require('assert');
+const should = chai.should;
+const assert = chai.assert;
 const mongoose = require('mongoose');
 
-describe('GET /', () => {
+
+
+// @todo change
+const expextedJson = {"@context":{},"entrypoints":{"authentication":{"url":"http://janul.bounceme.net:3000/authenticate","methods":"post"}}};
+
+
+describe('root endpoint', () => {
     it('GET / - expect 200 ', (done) => {
         request(app)
             .get('/')
-            .expect(200, done);
+            .end((err,res)=>{
+            expect(res.status).to.equal(200);
+            assert.deepEqual(res.body,expextedJson);
+            done();
+            });
     });
 });

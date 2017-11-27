@@ -1,23 +1,27 @@
+'use strict';
 const express = require('express');
 const router = express.Router();
 const _ = require('lodash');
+const mongoose = require('mongoose');
 const konsole = require('../libs/konsole');
 const base64url = require('base64url');
 const Provider = require('../models/Provider');
-const mongoose = require('mongoose');
+const User = require('../models/User');
 const verifyToken = require('../libs/verifyToken');
 const vocab = require('../libs/apiVocab').context;
 const jsonld = require('jsonld');
 const uuidv1 = require('uuid/v1');
+const jwt = require('jsonwebtoken');
 
 const validateIDPConf = require('../libs/Idpconfigurator').validateIDPConf;
 const validateReq = require('../libs/validators').serviceValidatorRequest;
 const filterOutput = require('../libs/filterOutput').hideSensitive;
 const convertToAnsible = require('../libs/convertToAnsible').translateToYaml;
 const yaml = require('write-yaml');
+const configGenHelper = require('../libs/configGenHelper');
 
 
-var generatesYamlFiles = function (cnf) {
+const generatesYamlFiles = function (cnf) {
 
     // generate attribute resolver part
     // go through objects and check '@type' === 'AttributeDefinition'
@@ -28,116 +32,114 @@ var generatesYamlFiles = function (cnf) {
 /**
  * create new service
  */
-router.post('/', verifyToken, validateReq, function (req, res) {
+router.post('/', verifyToken, validateReq, configGenHelper.configGen, function (req, res) {
     konsole('----------START REQUEST----------------');
-
-
-
-    konsole('res ' + JSON.stringify(req.jsonldexpanded));
-    konsole(`flatten: ${JSON.stringify(req.jsonflatten)}`);
+    konsole('res ' + JSON.stringify(res.locals.jsonldexpanded));
+    konsole(`flatten: ${JSON.stringify(res.locals.jsonflatten)}`);
 
     if (typeof req.inputhostname === 'undefined') {
         return res.status(400).json({"error": true, "message": "Missing hostname"});
     }
 
-    let query = Provider.findOne({name: req.inputhostname});
-    let promise = query.exec();
-
-    promise.then(function (doc) {
-        if (doc === null) {
-            let newProvider = new Provider({
-                name: req.inputhostname,
-                status: 'pending',
-                configuration: {
-                    format: "flatcompact",
-                    data: req.jsoncompactflatten,
-                    version: uuidv1()
-                }
-            });
-            let promise = newProvider.save();
-            promise.then(function (doc) {
-                //res.json(doc);
-                res.json({
-                    'error' : false,
-                    'message': 'request received'
-                });
-            }, function(err){
-                 res.status(500).json({
-                    'error' : true,
-                    'message': err
-                });
-            });
-
-        }
-        else {
+    let username = res.locals.tokenDecoded.sub;
+    let pQuery = Provider.findOne({name: req.inputhostname});
+    let pPromise = pQuery.exec();
+    let uQuery = User.findOne({username: username});
+    let uPromise = uQuery.exec();
+    Promise.all([pPromise, uPromise]).then(results => {
+        let doc = results[0];
+        let user = results[1];
+        if (doc !== null) {
             return res.status(409).json({"error": true, "message": "host already exist"});
         }
-    }).catch(function (error) {
-        return res.status(404).json({"error": true, "message": "" + error + ""});
+        let confVersion = uuidv1();
+        let newProvider = new Provider({
+            name: req.inputhostname,
+            status: 'pending',
+            configs: [{
+                format: "flatcompact",
+                flatcompact: res.locals.jsoncompactflatten,
+                ver: confVersion
+            }]
+        });
+        if (user !== null) {
+            newProvider.creator = user;
+        }
+        let sPromise = newProvider.save();
+        sPromise.then((doc) => {
+            res.json({
+                'error': false,
+                'message': 'request received'
+            });
+        }, (err) => {
+            res.status(500).json({
+                'error': true,
+                'message': err
+            });
+        });
+    }).catch(error => {
+        return res.status(500).json({"error": true, "message": "" + error + ""});
     });
-
 
     konsole('----------END REQUEST------------');
 
 });
 router.post('/:name', verifyToken, validateReq,
-    function (req, res, next) {
+    (req, res, next) => {
         let name = req.params.name;
         if (typeof req.inputhostname === 'undefined') {
             return res.status(400).json({"error": true, "message": "Missing hostname"});
         }
 
 
-        Provider.findOne({name: name}, function (err, result) {
-            if (!err) {
-                if (result) {
-
-
-                    var mydata = result.data;
-
-                    res.json(mydata)
+        let pPromise = Provider.findOne({name: name});
+        pPromise.then(
+            (result) => {
+                if (result !== null) {
+                    res.json(result.data)
                 }
                 else {
                     res.status(404).json({"error": true, "message": "Not found"});
                 }
-                konsole(result);
             }
-            else {
-                res.send(err);
-            }
+        ).catch(err => {
+            res.send(err);
         });
+
     }
 );
 
+router.get('/:name', verifyToken, (req, res) => {
+    let name = req.params.name;
 
 
-router.get('/:name/:filter', verifyToken, function (req, res, next) {
-    konsole('nameIDP: ' + JSON.stringify(req.params));
+    let provider = Provider.findOne({name: name});
+    provider.then(
+        (result) => {
+            if (result === null) {
+                res.status(404).json({"error": true, "message": "Not found"});
+            }
+            else {
+                res.json(result);
+            }
+        }
+    ).catch(err => {
+        res.json(err);
+    });
+});
 
+
+router.get('/:name/:filter', verifyToken, (req, res, next) => {
     let name = req.params.name;
     let detail = req.params.filter;
-
-    Provider.findOne({'name': name}, function (err, result) {
-        if (!err) {
+    let pProvider = findOne({name: name});
+    pProvider.then(
+        result => {
             if (result) {
                 let filteredRes = filterOutput(result);
                 if (detail === 'configuration') {
-
-                    // TEST to store absible playbook
-                    let convertedToAnsible = convertToAnsible(result.configuration.data);
-                    convertedToAnsible.then(function (resolve, reject) {
-                        if (resolve) {
-
-                            // temporary test
-                            yaml.sync('zupa.yaml', resolve);
-                        }
-                    });
-
-
-
-
-
-                    res.json(filteredRes.configuration)
+                    // @todo TEST to store ansible playbook
+                    res.json(filteredRes.configs)
                 }
                 else {
                     res.json(filteredRes)
@@ -148,10 +150,11 @@ router.get('/:name/:filter', verifyToken, function (req, res, next) {
                 res.status(404).json({"error": true, "message": "Not found"});
             }
         }
-        else {
+    ).catch(
+        err => {
             res.send(err);
-        }
-    });
+        });
+
 
 
 });

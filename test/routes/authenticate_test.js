@@ -34,6 +34,7 @@ describe('Authentication and request for JWT', () => {
             username: properUser.name,
             email: 'proper@example.com',
             password: properUser.password,
+            enabled: true
         });
         user1.save(done);
     });
@@ -42,7 +43,7 @@ describe('Authentication and request for JWT', () => {
             username: disabledUser.name,
             password: disabledUser.password,
             email: 'dfsdfsd@example.com',
-            disabled: true
+            enabled: false
         });
         user2.save(done);
     });

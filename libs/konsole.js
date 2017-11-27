@@ -1,6 +1,6 @@
 'use strict';
-const konsoleEnabled = false;
-var konsole = function(str){
+const konsoleEnabled = true;
+const konsole = function(str, konsoleEnabled = false){
     if(konsoleEnabled) {
         console.log(str);
     }

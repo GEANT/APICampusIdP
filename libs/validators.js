@@ -1,19 +1,19 @@
 const _ = require('lodash');
-var jsonld = require('jsonld');
-var jsonldPromises = jsonld.promises;
+const jsonld = require('jsonld');
+const jsonldPromises = jsonld.promises;
 
-var vocab = require('./apiVocab').context;
-var schema = require('./apiVocab').schema;
+const vocab = require('./apiVocab').context;
+const schema = require('./apiVocab').schema;
 const konsole = require('./konsole');
-var context = vocab;
-var myVocab = context['@vocab'];
+const context = vocab;
+const myVocab = context['@vocab'];
 
 
-var genKeyWithPref = function (key) {
+const genKeyWithPref = function (key) {
     return myVocab + key;
 };
 
-var validateWebComponent = function (expand) {
+const validateWebComponent = function (expand) {
     konsole('validateWebComponent: triggered');
     return new Promise(function (resolve, reject) {
 
@@ -36,7 +36,7 @@ var validateWebComponent = function (expand) {
     });
 };
 
-var validateWithSchema = function (obj) {
+const validateWithSchema = function (obj) {
 
     for (let prop in obj) {
         if (obj.hasOwnProperty(prop)) {
@@ -68,7 +68,7 @@ var validateWithSchema = function (obj) {
     }
 };
 // check if every key is in schema
-var processValidation = function (expanded) {
+const processValidation = function (expanded) {
     konsole('processValidation triggered');
 
     return new Promise(function (resolve, reject) {
@@ -101,7 +101,7 @@ var processValidation = function (expanded) {
 };
 
 
-var serviceValidatorRequest = function (req, res, next) {
+const serviceValidatorRequest = function (req, res, next) {
     let contentTypes = ['application/json', 'application/ld+json'];
     if (_.indexOf(contentTypes, req.header('content-type')) < 0) {
         return res.status(415).json({'error': true, 'message': 'Invalid content-type. Supported: application/json, application/ld+json'});
@@ -134,8 +134,8 @@ var serviceValidatorRequest = function (req, res, next) {
 
     expand.then(processValidation).then(function (expanded) {
 
-        req.jsonldexpanded = expanded;
-        konsole('FINAL: ' + JSON.stringify(req.jsonldexpanded));
+        res.locals.jsonldexpanded = expanded;
+        konsole('FINAL: ' + JSON.stringify(res.locals.jsonldexpanded));
         flatt.then(function (flatten) {
 
 
@@ -147,11 +147,11 @@ var serviceValidatorRequest = function (req, res, next) {
                 req.inputhostname = z[myVocab + "hostname"][0]['@value'];
             }
 
-            req.jsonflatten = flatten;
+            res.locals.jsonflatten = flatten;
             let cflattcompact = jsonldPromises.compact(flatten, req.body['@context'] );
 
             cflattcompact.then(function(result){
-                req.jsoncompactflatten = result;
+                res.locals.jsoncompactflatten = result;
                 next();
             });
 
