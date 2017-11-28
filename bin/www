@@ -3,33 +3,62 @@
 /**
  * Module dependencies.
  */
+const fs = require('fs');
+const path = require('path');
 const configer = require('../libs/serviceConfig');
 const app = require('../app');
 const debug = require('debug')('idpapi:server');
 const http = require('http');
 const https = require('https');
+const useHttps = configer.get("forcehttps") || false;
+const httpsPort = normalizePort(configer.get("https:port"));
+let pubKey = configer.get("https:cert");
+let privateKey = configer.get("https:key");
+let ca = configer.get("https:ca");
+let server;
+if (useHttps) {
+    if (httpsPort === null) {
+        throw "https port ( https.port) is not defined in the config";
+    }
+    if (pubKey === undefined || privateKey === undefined) {
+        throw "public or/and private key ( https.cert , https.key) is not defined in the config";
+    }
+    if (!path.isAbsolute(pubKey)) {
+        pubKey = path.join(__dirname, '../etc', pubKey);
+    }
+    if (!path.isAbsolute(privateKey)) {
+        privateKey = path.join(__dirname, '../etc', privateKey);
+    }
+    if (!fs.existsSync(pubKey) || !fs.existsSync(privateKey)) {
+        throw "cannot open/find or/and private key  files ( https.cert , https.key)";
+    }
+    let httpsOptions = {
+        key: fs.readFileSync(privateKey),
+        cert: fs.readFileSync(pubKey)
+    };
+    if (ca !== undefined) {
+        if (!path.isAbsolute(ca)) {
+            ca = path.join(__dirname, '../etc', ca);
+        }
+        if (!fs.existsSync(ca)) {
+            throw "cannot open/find CA file  defined in config ( https.ca)";
+        }
+        httpsOptions.ca = fs.readFileSync(ca);
+    }
 
+    app.set('port', httpsPort)
+    server = https.createServer(httpsOptions, app);
 
+    console.log('starting to listen (HTTPS) on port: ' + app.get('port'));
+}
+else {
 
-
-
-var port = normalizePort(configer.get("http:port"));
-app.set('port', port);
-
-
-
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-console.log('starting to listen on port: '+app.get('port'));
+    const port = normalizePort(configer.get("http:port"));
+    app.set('port', port);
+    server = http.createServer(app);
+    console.log('starting to listen (HTTP) on port: ' + app.get('port'));
+}
 server.listen(app.get('port'));
-
 server.on('error', onError);
 server.on('listening', onListening);
 
@@ -38,19 +67,11 @@ server.on('listening', onListening);
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
+    let port = parseInt(val, 10);
+    if (port >= 0) {
+        return port;
+    }
+    return null;
 }
 
 /**
@@ -58,27 +79,27 @@ function normalizePort(val) {
  */
 
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+    var bind = typeof port === 'string'
+        ? 'Pipe ' + port
+        : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
 }
 
 /**
@@ -86,9 +107,9 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+    debug('Listening on ' + bind);
 }
