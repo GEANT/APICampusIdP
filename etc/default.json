@@ -1,6 +1,6 @@
 {
   "application" : "campusIDP",
-  "baseUrl" : "http://janul.bounceme.net:3000/",
+  "baseUrl" : "http://host.example.com:3000/",
   "http": {
     "port" : "2456"
   },
