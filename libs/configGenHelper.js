@@ -42,9 +42,14 @@ const configGen = function (req, res, next) {
 
     console.log('>>>>>>');
     console.log(JSON.stringify(pl));
+    for(let i = 0; i < pl.length; i++ ){
+        console.log(` Element ${i} is ${JSON.stringify(pl[i])}`);
+
+        console.log(`index in flatten for ${JSON.stringify(pl[i])}`);
+    }
     console.log('<<<<<<');
 
-    //console.log(jsonflatten);
+    console.log(jsonflatten);
 
 
 
