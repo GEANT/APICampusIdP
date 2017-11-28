@@ -10,6 +10,15 @@ const app = require('../app');
 const debug = require('debug')('idpapi:server');
 const http = require('http');
 const https = require('https');
+
+
+
+
+const hostname = configer.get("hostname");
+if (hostname === undefined) {
+    throw "hostname  is not defined in the config";
+}
+let baseurl;
 const useHttps = configer.get("forcehttps") || false;
 const httpsPort = normalizePort(configer.get("https:port"));
 let pubKey = configer.get("https:cert");
@@ -45,18 +54,29 @@ if (useHttps) {
         }
         httpsOptions.ca = fs.readFileSync(ca);
     }
+    if (httpsPort !== 443) {
+        app.set('baseurl', 'https://' + hostname + ':' + httpsPort + '/');
+    }
+    else {
+        app.set('baseurl', 'https://' + hostname + '/');
+    }
 
     app.set('port', httpsPort)
     server = https.createServer(httpsOptions, app);
 
     console.log('starting to listen (HTTPS) on port: ' + app.get('port'));
+    console.log('base url : ' + app.get('baseurl'));
 }
 else {
 
     const port = normalizePort(configer.get("http:port"));
+
+
+
     app.set('port', port);
     server = http.createServer(app);
     console.log('starting to listen (HTTP) on port: ' + app.get('port'));
+    console.log('base url : ' + app.get('baseurl'));
 }
 server.listen(app.get('port'));
 server.on('error', onError);

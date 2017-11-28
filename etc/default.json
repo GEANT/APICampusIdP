@@ -1,9 +1,15 @@
 {
+  "hostname" : "host.example.com",
   "application" : "campusIDP",
-  "baseUrl" : "http://host.example.com:3000/",
   "http": {
     "port" : "2456"
   },
+  "https":{
+    "port": "4000",
+    "cert": "certs/jwt.crt",
+    "key": "certs/jwt.key"
+  },
+  "forcehttps" : false,
   "database" : {
     "host": "localhost",
     "port": "55132",

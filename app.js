@@ -37,9 +37,49 @@ const konsole = require('./libs/konsole');
  * config
  */
 const appConfig = require('./libs/serviceConfig');
-
+const configer = require('./libs/serviceConfig');
 const app = express();
+
+const useHttps = configer.get("forcehttps") || false;
+const httpsPort = parseInt(configer.get("https:port"), 10);
+const httpPort = parseInt(configer.get("http:port"),10);
+// will be used later if node is set behind proxy //
+const behindProxy = false;
+let proxyPort = parseInt(configer.get("proxy:port"),10);
+let proxyProtocol = configer.get("proxy:protocol") || "https";
+const hostname = configer.get("hostname");
+if (behindProxy) {
+    if (proxyProtocol == 'http') {
+        if (proxyPort !== 80) {
+            app.set('baseurl', 'http://' + hostname + '/');
+        }
+        else {
+            app.set('baseurl', 'http://' + hostname + ':' + proxyPort + '/');
+        }
+    }
+    else {
+        if (proxyPort !== 443) {
+            app.set('baseurl', 'https://' + hostname + '/');
+        }
+        else {
+            app.set('baseurl', 'https://' + hostname + ':' + proxyPort + '/');
+        }
+    }
+}
+else {
+    if (httpPort !== 80) {
+        app.set('baseurl', 'http://' + hostname + ':' + httpPort + '/');
+    }
+    else {
+        app.set('baseurl', 'http://' + hostname + '/');
+    }
+}
+
 app.set('appConfig', appConfig);
+
+
+
+
 
 
 const db_settings = appConfig.get('database');
