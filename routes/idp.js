@@ -132,7 +132,7 @@ router.get('/:name', verifyToken, (req, res) => {
 router.get('/:name/:filter', verifyToken, (req, res, next) => {
     let name = req.params.name;
     let detail = req.params.filter;
-    let pProvider = findOne({name: name});
+    let pProvider = Provider.findOne({name: name});
     pProvider.then(
         result => {
             if (result) {
