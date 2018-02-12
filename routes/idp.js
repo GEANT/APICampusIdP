@@ -20,6 +20,7 @@ const convertToAnsible = require('../libs/convertToAnsible').translateToYaml;
 const yaml = require('write-yaml');
 const configGenHelper = require('../libs/configGenHelper');
 const generateYaml = require('../libs/idpConfYamlGen').generateYaml;
+const yamljs = require('yamljs');
 
 
 const generatesYamlFiles = function (cnf) {
@@ -143,8 +144,11 @@ router.get('/:name/:filter', verifyToken, (req, res, next) => {
                     res.json(filteredRes.configs)
                 }
                 else if(detail === 'yamlconf'){
-                    let yamlconf = generateYaml(filteredRes.configs);
-                    res.json({ res: 'yaml'});
+                    console.log('yamlconf: '+JSON.stringify(filteredRes));
+                    let yamlconf = yamljs.stringify(JSON.parse(generateYaml(filteredRes,1)),10);
+                    //res.json({ res: 'yaml'});
+                    res.send(yamlconf);
+
                 }
                 else {
                     res.json(filteredRes)

@@ -35,7 +35,8 @@
     "uuid": "^3.1.0",
     "winston": "^2.3.1",
     "write-data": "^1.0.0",
-    "write-yaml": "^1.0.0"
+    "write-yaml": "^1.0.0",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
