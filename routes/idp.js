@@ -19,6 +19,7 @@ const filterOutput = require('../libs/filterOutput').hideSensitive;
 const convertToAnsible = require('../libs/convertToAnsible').translateToYaml;
 const yaml = require('write-yaml');
 const configGenHelper = require('../libs/configGenHelper');
+const generateYaml = require('../libs/idpConfYamlGen').generateYaml;
 
 
 const generatesYamlFiles = function (cnf) {
@@ -140,6 +141,10 @@ router.get('/:name/:filter', verifyToken, (req, res, next) => {
                 if (detail === 'configuration') {
                     // @todo TEST to store ansible playbook
                     res.json(filteredRes.configs)
+                }
+                else if(detail === 'yamlconf'){
+                    let yamlconf = generateYaml(filteredRes.configs);
+                    res.json({ res: 'yaml'});
                 }
                 else {
                     res.json(filteredRes)
