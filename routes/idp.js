@@ -14,7 +14,7 @@ const uuidv1 = require('uuid/v1');
 const jwt = require('jsonwebtoken');
 
 const validateIDPConf = require('../libs/Idpconfigurator').validateIDPConf;
-const validateReq = require('../libs/validators').serviceValidatorRequest;
+const serviceValidatorRequest = require('../libs/validators').serviceValidatorRequest;
 const filterOutput = require('../libs/filterOutput').hideSensitive;
 const convertToAnsible = require('../libs/convertToAnsible').translateToYaml;
 const yaml = require('write-yaml');
@@ -34,7 +34,7 @@ const generatesYamlFiles = function (cnf) {
 /**
  * create new service
  */
-router.post('/', verifyToken, validateReq, configGenHelper.configGen, function (req, res) {
+router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen, function (req, res) {
     konsole('----------START REQUEST----------------');
     konsole('res ' + JSON.stringify(res.locals.jsonldexpanded));
     konsole(`flatten: ${JSON.stringify(res.locals.jsonflatten)}`);
@@ -86,7 +86,7 @@ router.post('/', verifyToken, validateReq, configGenHelper.configGen, function (
     konsole('----------END REQUEST------------');
 
 });
-router.post('/:name', verifyToken, validateReq,
+router.post('/:name', verifyToken, serviceValidatorRequest,
     (req, res, next) => {
         let name = req.params.name;
         if (typeof req.inputhostname === 'undefined') {

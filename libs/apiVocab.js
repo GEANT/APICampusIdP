@@ -1,7 +1,7 @@
-
+'use strict'
 const vocab = "http://geant.org/schema/campusidp/";
 
-var context = {
+const context = {
     "@vocab": vocab,
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "ref": {
