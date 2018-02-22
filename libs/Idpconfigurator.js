@@ -38,7 +38,7 @@ function validateServiceDescription(b) {
 
     return true;
 }
-var validateConfigs = function(b) {
+const validateConfigs = function(b) {
 
 
     var zLenght = b.length;

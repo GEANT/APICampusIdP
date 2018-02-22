@@ -35,14 +35,9 @@ const generatesYamlFiles = function (cnf) {
  * create new service
  */
 router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen, function (req, res) {
-    konsole('----------START REQUEST----------------');
-    konsole('res ' + JSON.stringify(res.locals.jsonldexpanded));
-    konsole(`flatten: ${JSON.stringify(res.locals.jsonflatten)}`);
-
     if (typeof req.inputhostname === 'undefined') {
         return res.status(400).json({"error": true, "message": "Missing hostname"});
     }
-
     let username = res.locals.tokenDecoded.sub;
     let pQuery = Provider.findOne({name: req.inputhostname});
     let pPromise = pQuery.exec();
@@ -82,8 +77,6 @@ router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen
     }).catch(error => {
         return res.status(500).json({"error": true, "message": "" + error + ""});
     });
-
-    konsole('----------END REQUEST------------');
 
 });
 router.post('/:name', verifyToken, serviceValidatorRequest,

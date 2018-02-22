@@ -41,7 +41,7 @@ const configGen = function (req, res, next) {
     });
 
     console.log('>>>>>>');
-    console.log(JSON.stringify(pl));
+    console.log(JSON.stringify(pl,undefined,4));
     for(let i = 0; i < pl.length; i++ ){
         console.log(` Element ${i} is ${JSON.stringify(pl[i])}`);
 
