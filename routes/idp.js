@@ -74,9 +74,12 @@ router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen
                 'message': err
             });
         });
+
+
     }).catch(error => {
         return res.status(500).json({"error": true, "message": "" + error + ""});
     });
+    konsole('>>>DONE<<<');
 
 });
 router.post('/:name', verifyToken, serviceValidatorRequest,
