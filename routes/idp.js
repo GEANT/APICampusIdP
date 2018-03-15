@@ -14,11 +14,13 @@ const uuidv1 = require('uuid/v1');
 const jwt = require('jsonwebtoken');
 
 const validateIDPConf = require('../libs/Idpconfigurator').validateIDPConf;
-const validateReq = require('../libs/validators').serviceValidatorRequest;
+const serviceValidatorRequest = require('../libs/validators').serviceValidatorRequest;
 const filterOutput = require('../libs/filterOutput').hideSensitive;
 const convertToAnsible = require('../libs/convertToAnsible').translateToYaml;
 const yaml = require('write-yaml');
 const configGenHelper = require('../libs/configGenHelper');
+const generateYaml = require('../libs/idpConfYamlGen').generateYaml;
+const yamljs = require('yamljs');
 
 
 const generatesYamlFiles = function (cnf) {
@@ -32,15 +34,10 @@ const generatesYamlFiles = function (cnf) {
 /**
  * create new service
  */
-router.post('/', verifyToken, validateReq, configGenHelper.configGen, function (req, res) {
-    konsole('----------START REQUEST----------------');
-    konsole('res ' + JSON.stringify(res.locals.jsonldexpanded));
-    konsole(`flatten: ${JSON.stringify(res.locals.jsonflatten)}`);
-
+router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen, function (req, res) {
     if (typeof req.inputhostname === 'undefined') {
         return res.status(400).json({"error": true, "message": "Missing hostname"});
     }
-
     let username = res.locals.tokenDecoded.sub;
     let pQuery = Provider.findOne({name: req.inputhostname});
     let pPromise = pQuery.exec();
@@ -58,7 +55,7 @@ router.post('/', verifyToken, validateReq, configGenHelper.configGen, function (
             status: 'pending',
             configs: [{
                 format: "flatcompact",
-                flatcompact: res.locals.jsoncompactflatten,
+                flatcompact: res.app.locals.srvConfFlatCompact,
                 ver: confVersion
             }]
         });
@@ -77,14 +74,15 @@ router.post('/', verifyToken, validateReq, configGenHelper.configGen, function (
                 'message': err
             });
         });
+
+
     }).catch(error => {
         return res.status(500).json({"error": true, "message": "" + error + ""});
     });
-
-    konsole('----------END REQUEST------------');
+    konsole('>>>DONE<<<');
 
 });
-router.post('/:name', verifyToken, validateReq,
+router.post('/:name', verifyToken, serviceValidatorRequest,
     (req, res, next) => {
         let name = req.params.name;
         if (typeof req.inputhostname === 'undefined') {
@@ -132,7 +130,7 @@ router.get('/:name', verifyToken, (req, res) => {
 router.get('/:name/:filter', verifyToken, (req, res, next) => {
     let name = req.params.name;
     let detail = req.params.filter;
-    let pProvider = findOne({name: name});
+    let pProvider = Provider.findOne({name: name});
     pProvider.then(
         result => {
             if (result) {
@@ -140,6 +138,13 @@ router.get('/:name/:filter', verifyToken, (req, res, next) => {
                 if (detail === 'configuration') {
                     // @todo TEST to store ansible playbook
                     res.json(filteredRes.configs)
+                }
+                else if(detail === 'yamlconf'){
+                    console.log('yamlconf: '+JSON.stringify(filteredRes));
+                    let yamlconf = yamljs.stringify(JSON.parse(generateYaml(filteredRes,1)),10);
+                    //res.json({ res: 'yaml'});
+                    res.send(yamlconf);
+
                 }
                 else {
                     res.json(filteredRes)

@@ -19,9 +19,9 @@
     "express-urlrewrite": "^1.2.0",
     "jade": "~1.11.0",
     "json2yaml": "^1.1.0",
-    "jsonld": "^0.4.12",
+    "jsonld": "^0.5.20",
     "jsonwebtoken": "^8.1.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.5",
     "moment": "^2.19.2",
     "mongoose": "^4.13.3",
     "mongoose-version": "^1.1.0",
@@ -33,15 +33,17 @@
     "rotating-file-stream": "^1.3.4",
     "serve-favicon": "^2.4.5",
     "uuid": "^3.1.0",
+    "validator": "^9.4.1",
     "winston": "^2.3.1",
     "write-data": "^1.0.0",
-    "write-yaml": "^1.0.0"
+    "write-yaml": "^1.0.0",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "expect": "^21.2.1",
     "istanbul": "^0.4.5",
-    "mocha": "^4.0.1",
+    "mocha": "^5.0.0",
     "nyc": "^11.3.0",
     "supertest": "^3.0.0",
     "tap": "^10.7.3"

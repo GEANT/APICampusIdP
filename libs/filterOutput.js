@@ -21,8 +21,10 @@ var traversalWalk = function (input) {
 };
 
 var hideSensitive = function (inputData) {
-
+    //konsole(JSON.stringify(inputData));
+    // powinno byc inputData.configs , @todo poprzednio byl to object teraz array objectow
     if (inputData.configuration && inputData.configuration.data && inputData.configuration.data['@graph']) {
+
         konsole(`>>>>>>>> @graph FOUND`);
        _.find(inputData.configuration.data['@graph'], function (o) {
             if(o.hasOwnProperty('privateKey')  && _.isString(o.privateKey)) {

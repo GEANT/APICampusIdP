@@ -25,6 +25,7 @@ let pubKey = configer.get("https:cert");
 let privateKey = configer.get("https:key");
 let ca = configer.get("https:ca");
 let server;
+let finalPort;
 if (useHttps) {
     if (httpsPort === null) {
         throw "https port ( https.port) is not defined in the config";
@@ -61,7 +62,9 @@ if (useHttps) {
         app.set('baseurl', 'https://' + hostname + '/');
     }
 
-    app.set('port', httpsPort)
+
+    app.set('port', httpsPort);
+    finalPort = httpsPort;
     server = https.createServer(httpsOptions, app);
 
     console.log('starting to listen (HTTPS) on port: ' + app.get('port'));
@@ -71,9 +74,8 @@ else {
 
     const port = normalizePort(configer.get("http:port"));
 
-
-
     app.set('port', port);
+    finalPort = port;
     server = http.createServer(app);
     console.log('starting to listen (HTTP) on port: ' + app.get('port'));
     console.log('base url : ' + app.get('baseurl'));
@@ -88,7 +90,7 @@ server.on('listening', onListening);
 
 function normalizePort(val) {
     let port = parseInt(val, 10);
-    if (port >= 0) {
+    if (port > 0) {
         return port;
     }
     return null;
@@ -99,13 +101,15 @@ function normalizePort(val) {
  */
 
 function onError(error) {
+
     if (error.syscall !== 'listen') {
         throw error;
     }
 
+
     var bind = typeof port === 'string'
-        ? 'Pipe ' + port
-        : 'Port ' + port;
+        ? 'Pipe ' + finalPort
+        : 'Port ' + finalPort;
 
     // handle specific listen errors with friendly messages
     switch (error.code) {

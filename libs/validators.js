@@ -1,3 +1,4 @@
+'use strict';
 const _ = require('lodash');
 const jsonld = require('jsonld');
 const jsonldPromises = jsonld.promises;
@@ -67,6 +68,21 @@ const validateWithSchema = function (obj) {
         }
     }
 };
+
+const checkForType = function(element,expectedType){
+    if(element.hasOwnProperty('@type') !== true){
+        return false;
+    }
+    if(element['@type'].indexOf(expectedType) < 0){
+        return false;
+    }
+    return true;
+};
+
+const hasValue = function(el){
+  // @todo finish
+};
+
 // check if every key is in schema
 const processValidation = function (expanded) {
     konsole('processValidation triggered');
@@ -82,13 +98,52 @@ const processValidation = function (expanded) {
 
 
         validateWebComponent(expanded).then(function () {
-            if (expanded[0]['@type'][0] === myVocab + 'ServiceDescription') {
-                konsole('processValidation: success');
-                resolve(expanded);
-            } else {
+            let z = checkForType(expanded[0],myVocab + 'ServiceDescription');
+            if(checkForType(expanded[0],myVocab + 'ServiceDescription') !== true){
                 konsole('processValidation: failure');
-                reject('invalid');
+                reject('@type ServiceDescription not found');
             }
+            if(expanded[0].hasOwnProperty(myVocab + 'components') !== true){
+                reject('components element not found');
+            }
+            const components = expanded[0][myVocab + 'components'][0];
+
+            console.log('PPPPPPPPPPPPPPPPPPPPPPP');
+            console.log(JSON.stringify(components,null,2));
+            console.log('PPPPPPPPPPPPPPPPPPPPPPP');
+
+            if(checkForType(components,myVocab + 'Collection') !== true){
+                reject('components element must be Collection @type');
+            }
+
+            // start walk through components
+            // idp component
+
+            const idpComponent = components[myVocab+'idp'];
+            if(idpComponent === undefined || idpComponent[0] === undefined){
+                reject('idp component not found in components collection');
+            }
+            if(idpComponent[0]['@type'][0] !== myVocab+'IdPConf'){
+                reject('idp component must IdPConf @type but found '+ idpComponent[0]['@type'][0]);
+            }
+
+            if(idpComponent[0].hasOwnProperty(myVocab+'entityID') !== true){
+                reject('missing entityID property');
+            }
+
+
+            // web component
+
+            // end walk through components
+
+
+
+
+
+            konsole('processValidation: success');
+            resolve(expanded);
+
+
         }).catch(function (error) {
             konsole('CAT ERROR: ' + error);
             reject(error);
@@ -125,33 +180,33 @@ const serviceValidatorRequest = function (req, res, next) {
     }
 
 
-    var expand = jsonldPromises.expand(req.body);
+    const expand = jsonldPromises.expand(req.body);
 
-    var flatt = jsonldPromises.flatten(req.body);
+    const flatt = jsonldPromises.flatten(req.body);
 
 
 
 
     expand.then(processValidation).then(function (expanded) {
 
-        res.locals.jsonldexpanded = expanded;
-        konsole('FINAL: ' + JSON.stringify(res.locals.jsonldexpanded));
+        res.app.locals.srvConfExpand = expanded;
+
         flatt.then(function (flatten) {
 
 
             let z = _.find(flatten, function (o) {
                 return _.isEqual(_.toString(o['@type']), myVocab + "WebServer");
             });
-            konsole(JSON.stringify(flatten));
+
             if (_.isObject(z) && z[myVocab + "hostname"] && z[myVocab + "hostname"][0] && z[myVocab + "hostname"][0]['@value']) {
                 req.inputhostname = z[myVocab + "hostname"][0]['@value'];
             }
 
-            res.locals.jsonflatten = flatten;
-            let cflattcompact = jsonldPromises.compact(flatten, req.body['@context'] );
+            res.app.locals.srvConfFlat = flatten;
+            const cflatcompact = jsonldPromises.compact(flatten, req.body['@context'] );
 
-            cflattcompact.then(function(result){
-                res.locals.jsoncompactflatten = result;
+            cflatcompact.then(function(result){
+                res.app.locals.srvConfFlatCompact = result;
                 next();
             });
 

@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 
 
 // @todo change
-const expextedJson = {"@context":{},"entrypoints":{"authentication":{"url":"http://janul.bounceme.net:3000/authenticate","methods":"post"}}};
+const expextedJson = {"@context":{},"entrypoints":{"authentication":{"url":"http://host.example.com:2456/authenticate","methods":"post"}}};
 
 
 describe('root endpoint', () => {
