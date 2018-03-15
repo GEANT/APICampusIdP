@@ -55,7 +55,7 @@ router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen
             status: 'pending',
             configs: [{
                 format: "flatcompact",
-                flatcompact: res.locals.jsoncompactflatten,
+                flatcompact: res.app.locals.srvConfFlatCompact,
                 ver: confVersion
             }]
         });
