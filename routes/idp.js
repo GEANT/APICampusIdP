@@ -21,6 +21,7 @@ const yaml = require('write-yaml');
 const configGenHelper = require('../libs/configGenHelper');
 const generateYaml = require('../libs/idpConfYamlGen').generateYaml;
 const yamljs = require('yamljs');
+const url = require('url');
 
 
 const generatesYamlFiles = function (cnf) {
@@ -37,6 +38,12 @@ const generatesYamlFiles = function (cnf) {
 router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen, function (req, res) {
     if (typeof req.inputhostname === 'undefined') {
         return res.status(400).json({"error": true, "message": "Missing hostname"});
+    }
+    if(typeof res.app.locals.entityID === 'undefined'){
+        return res.status(400).json({"error": true, "message": "Missing entityid"});
+    }
+    if(req.inputhostname !== url.parse(res.app.locals.entityID).hostname ){
+        return res.status(400).json({"error": true, "message": "entityID does not match hostname"});
     }
     let username = res.locals.tokenDecoded.sub;
     let pQuery = Provider.findOne({name: req.inputhostname});

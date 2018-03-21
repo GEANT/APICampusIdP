@@ -12,6 +12,10 @@ const certGen = require('./certsGen');
 const genKeyWithPref = function (key) {
     return myVocab + key;
 };
+
+const genEntityID = function(hostname){
+  return 'https://'+hostname+'/idp';
+};
 // function which fill (autogenerate) input with missing values
 const configGen = function (req, res, next) {
 
@@ -59,3 +63,4 @@ const configGen = function (req, res, next) {
 };
 
 module.exports.configGen = configGen;
+module.exports.genEntityID = genEntityID;
