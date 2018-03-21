@@ -1,6 +1,6 @@
 const forge = require("node-forge");
 const pki = forge.pki;
-const keyLength = 3072;
+const keyLength = 2048;
 const min = 1;
 const max = Number.MAX_SAFE_INTEGER;
 const years = 5;

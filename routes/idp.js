@@ -23,7 +23,7 @@ const generateYaml = require('../libs/idpConfYamlGen').generateYaml;
 const yamljs = require('yamljs');
 const url = require('url');
 
-
+const eol = require('eol');
 const generatesYamlFiles = function (cnf) {
 
     // generate attribute resolver part
@@ -144,7 +144,7 @@ router.get('/:name/:filter', verifyToken, (req, res, next) => {
                 let filteredRes = filterOutput(result);
                 if (detail === 'configuration') {
                     // @todo TEST to store ansible playbook
-                    res.json(filteredRes.configs)
+                    res.json(filteredRes.configs);
                 }
                 else if(detail === 'yamlconf'){
                     console.log('yamlconf: '+JSON.stringify(filteredRes));
