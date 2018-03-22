@@ -91,8 +91,9 @@ const hasValue = function (el) {
     // @todo finish
 };
 
-const validateEntityID = function () {
-    console.log('POLO: ' + app.locals.entityID);
+const validateEntityID = function (req, res, next) {
+    console.log('POLO: ' +res.locals.entityID);
+    next();
 };
 
 // check if every key is in schema

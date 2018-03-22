@@ -32,7 +32,9 @@ const isAllowedToDelIdP = function (req, res, next) {
 
 const processToDelIdP = function (req, res, next) {
 
+    next();
 };
 
 module.exports.valDelIdPReq = valDelIdPReq;
 module.exports.isAllowedToDelIdP = isAllowedToDelIdP;
+module.exports.processToDelIdP = processToDelIdP;

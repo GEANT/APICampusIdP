@@ -40,10 +40,10 @@ router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen
     if (typeof req.inputhostname === 'undefined') {
         return res.status(400).json({"error": true, "message": "Missing hostname"});
     }
-    if(typeof res.app.locals.entityID === 'undefined'){
+    if(typeof res.locals.entityID === 'undefined'){
         return res.status(400).json({"error": true, "message": "Missing entityid"});
     }
-    if(req.inputhostname !== url.parse(res.app.locals.entityID).hostname ){
+    if(req.inputhostname !== url.parse(res.locals.entityID).hostname ){
         return res.status(400).json({"error": true, "message": "entityID does not match hostname"});
     }
     let username = res.locals.tokenDecoded.sub;
@@ -63,7 +63,7 @@ router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen
             status: 'pending',
             configs: [{
                 format: "flatcompact",
-                flatcompact: res.app.locals.srvConfFlatCompact,
+                flatcompact: res.locals.srvConfFlatCompact,
                 ver: confVersion
             }]
         });
@@ -172,7 +172,9 @@ router.get('/:name/:filter', verifyToken, (req, res) => {
 
 });
 
-router.delete('/:name',verifyToken, (req,res)=>{
+router.delete('/:name',verifyToken,actionsIdP.processToDelIdP ,(req,res)=>{
+    console.log('BBBBBBBBBBBBBBBBBB>>>>: '+res.locals.entityID);
+
     const username = res.locals.tokenDecoded.sub;
     const name = req.params.name;
     Provider.findOne({name: name}).then((myProvider) => {
