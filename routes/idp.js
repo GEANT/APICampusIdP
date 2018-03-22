@@ -72,7 +72,7 @@ router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen
         }
         let sPromise = newProvider.save();
         sPromise.then((doc) => {
-            res.json({
+            res.status(202).json({
                 'error': false,
                 'message': 'request received'
             });
@@ -172,32 +172,8 @@ router.get('/:name/:filter', verifyToken, (req, res) => {
 
 });
 
-router.delete('/:name',verifyToken,actionsIdP.processToDelIdP ,(req,res)=>{
-    console.log('BBBBBBBBBBBBBBBBBB>>>>: '+res.locals.entityID);
-
-    const username = res.locals.tokenDecoded.sub;
-    const name = req.params.name;
-    Provider.findOne({name: name}).then((myProvider) => {
-      if(myProvider === null){
-          return res.status(404).json({"error": true, "message": "Not found"});
-      }
-      else {
-          User.findOne({_id: myProvider.creator}).then(creator => {
-              if (creator.username !== username) {
-                  return res.status(401).json({"error": true, "message": "Access den"});
-              }
-              else {
-                  res.json({"error": false, "message": "OK"});
-              }
-
-          }).catch(err => {
-              return res.status(404).json({"error": true, "message": "Not found"});
-          })
-
-      }
-    }).catch(reject =>{
-        res.send(err);
-    });
+router.delete('/:name',verifyToken,actionsIdP.valDelIdPReq, actionsIdP.isAllowedToDelIdP ,actionsIdP.processToDelIdP,(req,res)=>{
+    res.json({"error": false, "message": "OK"});
 });
 
 module.exports = router;

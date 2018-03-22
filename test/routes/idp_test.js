@@ -186,7 +186,7 @@ describe('/idp', () => {
                     .set('Authorization', 'Bearer ' + validToken)
                     .set('Content-type', 'application/ld+json')
                     .send(invalidIDPConfInput_1)
-                    .expect(422)
+                    .expect(400)
                     .end((err, res) => {
                         if (err) {
                             done(err);
@@ -223,7 +223,7 @@ describe('/idp', () => {
                     .set('Authorization', 'Bearer ' + validToken)
                     .set('Content-type', 'application/ld+json')
                     .send(newIDPConfInput)
-                    .expect(200)
+                    .expect(202)
                     .end((err, res) => {
                         if (err) {
                             return done(err);

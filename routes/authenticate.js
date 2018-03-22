@@ -17,7 +17,7 @@ router.post("/", function (req, res) {
     } else {
         const name = req.body.name;
         const password = req.body.password;
-        let userPromise =  User.findOne({username: name, enabled: true});
+        let userPromise =  User.findOne({username: name, enabled: true}).select('+password');
 
         userPromise.then(
             user => {

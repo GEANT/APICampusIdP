@@ -91,16 +91,14 @@ const hasValue = function (el) {
     // @todo finish
 };
 
-const validateEntityID = function (req, res, next) {
-    console.log('POLO: ' +res.locals.entityID);
-    next();
-};
 
 // check if every key is in schema
-const processValidation = function (expanded) {
+const processValidation = function (req, res, next) {
     konsole('processValidation triggered');
 
     return new Promise((resolve, reject) => {
+
+        let expanded = res.locals.expandedInput;
 
 
         validateWithSchema(expanded);
@@ -114,10 +112,10 @@ const processValidation = function (expanded) {
                 return reject('components element not found');
             }
             const components = expanded[0][myVocab + 'components'][0];
-
+/*
             console.log('PPPPPPPPPPPPPPPPPPPPPPP');
             console.log(JSON.stringify(expanded, null, 2));
-            console.log('PPPPPPPPPPPPPPPPPPPPPPP');
+            console.log('PPPPPPPPPPPPPPPPPPPPPPP');*/
 
             if (checkForType(components, myVocab + 'Collection') !== true) {
                 return reject('components element must be Collection @type');
@@ -172,7 +170,7 @@ const processValidation = function (expanded) {
                     return reject('missing entityID value');
                 }
             }
-            app.locals.entityID = entityID['@value'];
+            res.locals.entityID = entityID['@value'];
             if (idpComponent[0].hasOwnProperty(myVocab + 'metadataProviders') !== true) {
                 return reject('missing metadataProviders property');
             }
@@ -268,7 +266,6 @@ const serviceValidatorRequest = function (req, res, next) {
             'message': 'Invalid content-type. Supported: application/json, application/ld+json'
         });
     }
-    app = req.app;
     // check for matching @context url
     let contextsConf = req.app.get('appConfig').get('contexts');
     let serviceContext;
@@ -289,16 +286,16 @@ const serviceValidatorRequest = function (req, res, next) {
 
     const expand = jsonldPromises.expand(req.body);
 
+    expand.then((expresolve) => {
+        res.locals.expandedInput = expresolve;
 
-    expand.then(processValidation).then(function (expanded) {
+    }).then(() => {
+        return processValidation(req, res, next)
+    }).then(() => {
+        const flatt = jsonldPromises.flatten(res.locals.expandedInput);
+        res.locals.srvConfExpand = res.locals.expandedInput;
 
-        console.log('>>> AFTER PROCESSING START<<<');
-        console.log(JSON.stringify(expanded, null, 2))
-        console.log('>>> AFTER PROCESSING END<<<');
-        const flatt = jsonldPromises.flatten(expanded);
-        res.app.locals.srvConfExpand = expanded;
-
-        flatt.then(function (flatten) {
+        flatt.then( (flatten) => {
 
 
             let z = _.find(flatten, function (o) {
@@ -310,11 +307,11 @@ const serviceValidatorRequest = function (req, res, next) {
             }
 
 
-            res.app.locals.srvConfFlat = flatten;
+            res.locals.srvConfFlat = flatten;
             const cflatcompact = jsonldPromises.compact(flatten, req.body['@context']);
 
             cflatcompact.then(function (result) {
-                res.app.locals.srvConfFlatCompact = result;
+                res.locals.srvConfFlatCompact = result;
                 next();
             });
 
@@ -323,7 +320,7 @@ const serviceValidatorRequest = function (req, res, next) {
 
     }).catch(function (error) {
         konsole('Error catch: ' + error);
-        return res.status(422).json({'error': true, 'message': 'Invalid request : ' + error});
+        return res.status(400).json({'error': true, 'message': 'Invalid request : ' + error});
     });
 
 
