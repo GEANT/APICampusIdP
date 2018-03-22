@@ -136,7 +136,7 @@ const processValidation = function (expanded) {
             if (isValidDomain(hostname) !== true) {
                 return reject('invalid hostname value');
             }
-            
+
             // start walk through components
             // idp component
 

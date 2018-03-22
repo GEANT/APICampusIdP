@@ -13,6 +13,7 @@ const jsonld = require('jsonld');
 const uuidv1 = require('uuid/v1');
 const jwt = require('jsonwebtoken');
 
+const actionsIdP = require('../libs/actionsIdp');
 const validateIDPConf = require('../libs/Idpconfigurator').validateIDPConf;
 const serviceValidatorRequest = require('../libs/validators').serviceValidatorRequest;
 const filterOutput = require('../libs/filterOutput').hideSensitive;
@@ -134,7 +135,7 @@ router.get('/:name', verifyToken, (req, res) => {
 });
 
 
-router.get('/:name/:filter', verifyToken, (req, res, next) => {
+router.get('/:name/:filter', verifyToken, (req, res) => {
     let name = req.params.name;
     let detail = req.params.filter;
     let pProvider = Provider.findOne({name: name});
@@ -171,6 +172,31 @@ router.get('/:name/:filter', verifyToken, (req, res, next) => {
 
 });
 
+router.delete('/:name',verifyToken, (req,res)=>{
+    const username = res.locals.tokenDecoded.sub;
+    const name = req.params.name;
+    Provider.findOne({name: name}).then((myProvider) => {
+      if(myProvider === null){
+          return res.status(404).json({"error": true, "message": "Not found"});
+      }
+      else {
+          User.findOne({_id: myProvider.creator}).then(creator => {
+              if (creator.username !== username) {
+                  return res.status(401).json({"error": true, "message": "Access den"});
+              }
+              else {
+                  res.json({"error": false, "message": "OK"});
+              }
+
+          }).catch(err => {
+              return res.status(404).json({"error": true, "message": "Not found"});
+          })
+
+      }
+    }).catch(reject =>{
+        res.send(err);
+    });
+});
 
 module.exports = router;
 
