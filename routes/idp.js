@@ -13,6 +13,7 @@ const jsonld = require('jsonld');
 const uuidv1 = require('uuid/v1');
 const jwt = require('jsonwebtoken');
 
+const actionsIdP = require('../libs/actionsIdp');
 const validateIDPConf = require('../libs/Idpconfigurator').validateIDPConf;
 const serviceValidatorRequest = require('../libs/validators').serviceValidatorRequest;
 const filterOutput = require('../libs/filterOutput').hideSensitive;
@@ -21,8 +22,9 @@ const yaml = require('write-yaml');
 const configGenHelper = require('../libs/configGenHelper');
 const generateYaml = require('../libs/idpConfYamlGen').generateYaml;
 const yamljs = require('yamljs');
+const url = require('url');
 
-
+const eol = require('eol');
 const generatesYamlFiles = function (cnf) {
 
     // generate attribute resolver part
@@ -37,6 +39,12 @@ const generatesYamlFiles = function (cnf) {
 router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen, function (req, res) {
     if (typeof req.inputhostname === 'undefined') {
         return res.status(400).json({"error": true, "message": "Missing hostname"});
+    }
+    if(typeof res.locals.entityID === 'undefined'){
+        return res.status(400).json({"error": true, "message": "Missing entityid"});
+    }
+    if(req.inputhostname !== url.parse(res.locals.entityID).hostname ){
+        return res.status(400).json({"error": true, "message": "entityID does not match hostname"});
     }
     let username = res.locals.tokenDecoded.sub;
     let pQuery = Provider.findOne({name: req.inputhostname});
@@ -55,7 +63,7 @@ router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen
             status: 'pending',
             configs: [{
                 format: "flatcompact",
-                flatcompact: res.app.locals.srvConfFlatCompact,
+                flatcompact: res.locals.srvConfFlatCompact,
                 ver: confVersion
             }]
         });
@@ -64,7 +72,7 @@ router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen
         }
         let sPromise = newProvider.save();
         sPromise.then((doc) => {
-            res.json({
+            res.status(202).json({
                 'error': false,
                 'message': 'request received'
             });
@@ -127,7 +135,7 @@ router.get('/:name', verifyToken, (req, res) => {
 });
 
 
-router.get('/:name/:filter', verifyToken, (req, res, next) => {
+router.get('/:name/:filter', verifyToken, (req, res) => {
     let name = req.params.name;
     let detail = req.params.filter;
     let pProvider = Provider.findOne({name: name});
@@ -137,7 +145,7 @@ router.get('/:name/:filter', verifyToken, (req, res, next) => {
                 let filteredRes = filterOutput(result);
                 if (detail === 'configuration') {
                     // @todo TEST to store ansible playbook
-                    res.json(filteredRes.configs)
+                    res.json(filteredRes.configs);
                 }
                 else if(detail === 'yamlconf'){
                     console.log('yamlconf: '+JSON.stringify(filteredRes));
@@ -164,6 +172,9 @@ router.get('/:name/:filter', verifyToken, (req, res, next) => {
 
 });
 
+router.delete('/:name',verifyToken,actionsIdP.valDelIdPReq, actionsIdP.isAllowedToDelIdP ,actionsIdP.processToDelIdP,(req,res)=>{
+    res.json({"error": false, "message": "OK"});
+});
 
 module.exports = router;
 

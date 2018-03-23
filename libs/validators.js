@@ -1,14 +1,22 @@
 'use strict';
 const _ = require('lodash');
+const url = require('url');
 const jsonld = require('jsonld');
 const jsonldPromises = jsonld.promises;
+const mongoose = require('mongoose');
+const Provider = require('../models/Provider');
 
+const eol = require('eol');
 const vocab = require('./apiVocab').context;
 const schema = require('./apiVocab').schema;
+const certGen = require('./certsGen');
 const konsole = require('./konsole');
 const context = vocab;
 const myVocab = context['@vocab'];
-
+const validator = require('validator');
+const isValidDomain = require('is-valid-domain');
+const configGenHelper = require('./configGenHelper');
+let app;
 
 const genKeyWithPref = function (key) {
     return myVocab + key;
@@ -69,75 +77,169 @@ const validateWithSchema = function (obj) {
     }
 };
 
-const checkForType = function(element,expectedType){
-    if(element.hasOwnProperty('@type') !== true){
+const checkForType = function (element, expectedType) {
+    if (element.hasOwnProperty('@type') !== true) {
         return false;
     }
-    if(element['@type'].indexOf(expectedType) < 0){
+    if (element['@type'].indexOf(expectedType) < 0) {
         return false;
     }
     return true;
 };
 
-const hasValue = function(el){
-  // @todo finish
+const hasValue = function (el) {
+    // @todo finish
 };
 
+
 // check if every key is in schema
-const processValidation = function (expanded) {
+const processValidation = function (req, res, next) {
     konsole('processValidation triggered');
 
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
+
+        let expanded = res.locals.expandedInput;
 
 
         validateWithSchema(expanded);
-
-        //if(isValid === false){
-        //   return reject('no valid against schema');
-        // }
-
-
         validateWebComponent(expanded).then(function () {
-            let z = checkForType(expanded[0],myVocab + 'ServiceDescription');
-            if(checkForType(expanded[0],myVocab + 'ServiceDescription') !== true){
+            let z = checkForType(expanded[0], myVocab + 'ServiceDescription');
+            if (checkForType(expanded[0], myVocab + 'ServiceDescription') !== true) {
                 konsole('processValidation: failure');
-                reject('@type ServiceDescription not found');
+                return reject('@type ServiceDescription not found');
             }
-            if(expanded[0].hasOwnProperty(myVocab + 'components') !== true){
-                reject('components element not found');
+            if (expanded[0].hasOwnProperty(myVocab + 'components') !== true) {
+                return reject('components element not found');
             }
             const components = expanded[0][myVocab + 'components'][0];
-
+/*
             console.log('PPPPPPPPPPPPPPPPPPPPPPP');
-            console.log(JSON.stringify(components,null,2));
-            console.log('PPPPPPPPPPPPPPPPPPPPPPP');
+            console.log(JSON.stringify(expanded, null, 2));
+            console.log('PPPPPPPPPPPPPPPPPPPPPPP');*/
 
-            if(checkForType(components,myVocab + 'Collection') !== true){
-                reject('components element must be Collection @type');
+            if (checkForType(components, myVocab + 'Collection') !== true) {
+                return reject('components element must be Collection @type');
+            }
+
+            // web component
+
+            if (components.hasOwnProperty(myVocab + 'web') !== true) {
+                return reject('web component not found in components collection');
+            }
+
+            let hostname = _.get(expanded, ['0', '' + myVocab + 'components', '0', '' + myVocab + 'web', '0', '' + myVocab + 'hostname', '0', '@value']);
+            if (typeof hostname === 'undefined') {
+                return reject('missing hostname value');
+            }
+            hostname = _.trim(hostname);
+            if (isValidDomain(hostname) !== true) {
+                return reject('invalid hostname value');
             }
 
             // start walk through components
             // idp component
 
-            const idpComponent = components[myVocab+'idp'];
-            if(idpComponent === undefined || idpComponent[0] === undefined){
-                reject('idp component not found in components collection');
-            }
-            if(idpComponent[0]['@type'][0] !== myVocab+'IdPConf'){
-                reject('idp component must IdPConf @type but found '+ idpComponent[0]['@type'][0]);
-            }
-
-            if(idpComponent[0].hasOwnProperty(myVocab+'entityID') !== true){
-                reject('missing entityID property');
+            if (components.hasOwnProperty(myVocab + 'idp') !== true) {
+                return reject('idp component not found in components collection');
             }
 
 
-            // web component
+            const idpComponent = components[myVocab + 'idp'];
+            if (!(0 in idpComponent)) {
+                return reject('idp component is empty');
+            }
+            if (checkForType(idpComponent[0], myVocab + 'IdPConf') !== true) {
+                return reject('idp component must be IdPConf @type');
+            }
+            if (idpComponent[0].hasOwnProperty(myVocab + 'entityID') !== true) {
+                return reject('missing entityID property');
+            }
+            let entityID = idpComponent[0]['' + myVocab + 'entityID'][0];
+
+            // generate entityID from hostname
+            if (checkForType(entityID, myVocab + 'autoGenerated') === true) {
+                entityID['@value'] = configGenHelper.genEntityID(hostname);
+                delete entityID['@type'];
+            }
+            else {
+                if (entityID['@value'] === undefined) {
+                    return reject('missing entityID value');
+                }
+                entityID['@value'] = entityID['@value'].trim();
+                if (entityID['@value'] === "") {
+                    return reject('missing entityID value');
+                }
+            }
+            res.locals.entityID = entityID['@value'];
+            if (idpComponent[0].hasOwnProperty(myVocab + 'metadataProviders') !== true) {
+                return reject('missing metadataProviders property');
+            }
+            /**
+             * @todo finish metadataProviders
+             */
+
+
+            if (idpComponent[0].hasOwnProperty(myVocab + 'sso') !== true) {
+                return reject('missing sso property');
+            }
+
+
+            let sso = idpComponent[0]['' + myVocab + 'sso'][0];
+            if (typeof sso === undefined) {
+                return reject('empty sso property');
+            }
+
+
+            // generate key - quite slow
+            if (checkForType(sso, myVocab + 'autoGenerated') === true) {
+
+                idpComponent[0]['' + myVocab + 'sso'][0]['' + myVocab + 'certificates'] = [];
+
+                let ssogen = configGenHelper.genSso({hostname: hostname});
+                let certsign = {};
+                certsign['' + myVocab + 'publicKey'] = [];
+                certsign['' + myVocab + 'privateKey'] = [];
+                certsign['' + myVocab + 'use'] = [];
+
+                certsign['' + myVocab + 'publicKey'].push({
+                    '@type': myVocab + 'X509Certificate',
+                    '@value': ssogen.signing.certificate,
+                });
+
+                certsign['' + myVocab + 'privateKey'].push({
+                    '@value': ssogen.signing.privateKey
+                });
+
+                certsign['' + myVocab + 'use'].push({
+                    '@value': 'signing'
+                });
+
+                idpComponent[0]['' + myVocab + 'sso'][0]['' + myVocab + 'certificates'].push(certsign);
+
+                let certenc = {};
+                certenc['' + myVocab + 'publicKey'] = [];
+                certenc['' + myVocab + 'privateKey'] = [];
+                certenc['' + myVocab + 'use'] = [];
+                certenc['' + myVocab + 'publicKey'].push({
+                    '@type': myVocab + 'X509Certificate',
+                    '@value': ssogen.encryption.certificate,
+                });
+                certenc['' + myVocab + 'privateKey'].push({
+                    '@value': ssogen.encryption.privateKey
+                });
+
+                certenc['' + myVocab + 'use'].push({
+                    '@value': 'encryption'
+                });
+                idpComponent[0]['' + myVocab + 'sso'][0][myVocab + 'certificates'].push(certenc);
+
+            }
+            else {
+
+            }
+
 
             // end walk through components
-
-
-
 
 
             konsole('processValidation: success');
@@ -159,9 +261,11 @@ const processValidation = function (expanded) {
 const serviceValidatorRequest = function (req, res, next) {
     let contentTypes = ['application/json', 'application/ld+json'];
     if (_.indexOf(contentTypes, req.header('content-type')) < 0) {
-        return res.status(415).json({'error': true, 'message': 'Invalid content-type. Supported: application/json, application/ld+json'});
+        return res.status(415).json({
+            'error': true,
+            'message': 'Invalid content-type. Supported: application/json, application/ld+json'
+        });
     }
-
     // check for matching @context url
     let contextsConf = req.app.get('appConfig').get('contexts');
     let serviceContext;
@@ -182,16 +286,16 @@ const serviceValidatorRequest = function (req, res, next) {
 
     const expand = jsonldPromises.expand(req.body);
 
-    const flatt = jsonldPromises.flatten(req.body);
+    expand.then((expresolve) => {
+        res.locals.expandedInput = expresolve;
 
+    }).then(() => {
+        return processValidation(req, res, next)
+    }).then(() => {
+        const flatt = jsonldPromises.flatten(res.locals.expandedInput);
+        res.locals.srvConfExpand = res.locals.expandedInput;
 
-
-
-    expand.then(processValidation).then(function (expanded) {
-
-        res.app.locals.srvConfExpand = expanded;
-
-        flatt.then(function (flatten) {
+        flatt.then( (flatten) => {
 
 
             let z = _.find(flatten, function (o) {
@@ -202,21 +306,21 @@ const serviceValidatorRequest = function (req, res, next) {
                 req.inputhostname = z[myVocab + "hostname"][0]['@value'];
             }
 
-            res.app.locals.srvConfFlat = flatten;
-            const cflatcompact = jsonldPromises.compact(flatten, req.body['@context'] );
 
-            cflatcompact.then(function(result){
-                res.app.locals.srvConfFlatCompact = result;
+            res.locals.srvConfFlat = flatten;
+            const cflatcompact = jsonldPromises.compact(flatten, req.body['@context']);
+
+            cflatcompact.then(function (result) {
+                res.locals.srvConfFlatCompact = result;
                 next();
             });
-
 
 
         });
 
     }).catch(function (error) {
         konsole('Error catch: ' + error);
-        return res.status(422).json({'error': true, 'message': 'Invalid request : ' + error});
+        return res.status(400).json({'error': true, 'message': 'Invalid request : ' + error});
     });
 
 

@@ -23,6 +23,7 @@ var traversalWalk = function (input) {
 var hideSensitive = function (inputData) {
     //konsole(JSON.stringify(inputData));
     // powinno byc inputData.configs , @todo poprzednio byl to object teraz array objectow
+    // @todo fix search for @graph
     if (inputData.configuration && inputData.configuration.data && inputData.configuration.data['@graph']) {
 
         konsole(`>>>>>>>> @graph FOUND`);
