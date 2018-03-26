@@ -112,10 +112,6 @@ const processValidation = function (req, res, next) {
                 return reject('components element not found');
             }
             const components = expanded[0][myVocab + 'components'][0];
-/*
-            console.log('PPPPPPPPPPPPPPPPPPPPPPP');
-            console.log(JSON.stringify(expanded, null, 2));
-            console.log('PPPPPPPPPPPPPPPPPPPPPPP');*/
 
             if (checkForType(components, myVocab + 'Collection') !== true) {
                 return reject('components element must be Collection @type');
