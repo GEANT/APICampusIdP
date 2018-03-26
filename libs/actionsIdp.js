@@ -37,7 +37,9 @@ const valDelIdPReq = function (req, res, next) {
 
             next();
         }
-        return res.status(404).json({"error": true, "message": "Not found"});
+        else {
+            return res.status(404).json({"error": true, "message": "Not found"});
+        }
     }).catch((error) => {
         return res.status(404).json({"error": true, "message": "Not found"});
 
@@ -50,10 +52,6 @@ const isAllowedToDelIdP = function (req, res, next) {
         return res.status(404).json({"error": true, "message": "zzNot found"});
     }
     const provider = res.locals.provider;
-
-    console.log(JSON.stringify(provider.creator))
-
-
     if (!(('creator' in provider) && ('username' in provider.creator))) { // && provider.creator.hasOwnProperty('username')){
         return res.status(401).json({"error": true, "message": "Not authorized"});
     }
@@ -69,8 +67,12 @@ const isAllowedToDelIdP = function (req, res, next) {
 const processToDelIdP = function (req, res, next) {
 
     const provider = res.locals.provider;
-    provider.remove();
-    next();
+    provider.remove().then(()=>{
+        next();
+    }).catch((err)=>{
+        res.status(500).json({"error": true, "message": err});
+    });
+
 };
 
 module.exports.valDelIdPReq = valDelIdPReq;
