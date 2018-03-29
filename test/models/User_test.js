@@ -122,7 +122,7 @@ describe("Model User", () => {
     describe("Update", () => {
         it("update user password", done => {
             let newPass = "321";
-            User.findOne({name: sampleUser.name}).then(user => {
+            User.findOne({name: sampleUser.name}).select('+password').then(user => {
 
                 expect(user).to.not.equal(null);
                 return user;
@@ -130,8 +130,9 @@ describe("Model User", () => {
             }).then(user => {
                 user.password = newPass;
                 user.save().then(() => {
-                    return User.findOne({name: sampleUser.name});
+                    return User.findOne({name: sampleUser.name}).select('+password');
                 }).then(nuser => {
+                    console.log('NUSER: '+nuser);
                     nuser.checkPassword(newPass, function (err, isMatch) {
                         expect(isMatch).to.equal(true);
                         done();
@@ -167,13 +168,13 @@ describe("Model User", () => {
         it("check for incorrect password", done => {
             let newPass = "321";
             let wrongPass = "123";
-            User.findOne({name: sampleUser.name}).then(user => {
+            User.findOne({name: sampleUser.name}).select('+password').then(user => {
                 expect(user).to.not.equal(null);
                 return user;
             }).then(user => {
                 user.password = newPass;
                 user.save().then(() => {
-                    return User.findOne({name: sampleUser.name});
+                    return User.findOne({name: sampleUser.name}).select('+password');
                 }).then(nuser => {
                     nuser.checkPassword(wrongPass, function (err, isMatch) {
                         expect(isMatch).to.equal(false);

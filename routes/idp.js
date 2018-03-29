@@ -148,7 +148,7 @@ router.get('/:name/:filter', verifyToken, (req, res) => {
                     res.json(filteredRes.configs);
                 }
                 else if(detail === 'yamlconf'){
-                    console.log('yamlconf: '+JSON.stringify(filteredRes));
+                    //console.log('yamlconf: '+JSON.stringify(filteredRes));
                     let yamlconf = yamljs.stringify(JSON.parse(generateYaml(filteredRes,1)),10);
                     //res.json({ res: 'yaml'});
                     res.send(yamlconf);
