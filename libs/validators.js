@@ -132,6 +132,25 @@ const validateKeyDescriptor = function (obj) {
 
 };
 
+const processMetadataProvider = function(component){
+    console.log('processMetadataProvider triggered');
+
+    /**
+     * @todo finish processMetadataProvider
+     */
+};
+
+const processMetadataProviders = function(component){
+
+    let compLen =component.length;
+    for(let i = 0; i < compLen; i++){
+        if(component.hasOwnProperty(i)){
+            console.log(JSON.stringify(component[i]));
+            processMetadataProvider(component[i]);
+        }
+    }
+};
+
 
 // check if every key is in schema
 const processValidation = function (req, res, next) {
@@ -213,6 +232,8 @@ const processValidation = function (req, res, next) {
             /**
              * @todo finish metadataProviders
              */
+
+            processMetadataProviders(idpComponent[0][myVocab + 'metadataProviders']);
 
 
             if (idpComponent[0].hasOwnProperty(myVocab + 'sso') !== true) {
