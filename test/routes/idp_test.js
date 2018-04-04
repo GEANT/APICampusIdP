@@ -146,7 +146,7 @@ describe('/idp', () => {
         });
         context('POST /idp with correct JWT : Scenarios', () => {
 
-            it('#01 Request with usupported media type', (done) => {
+            it('#01 Request with unsupported media type', (done) => {
                 request(app)
                     .post('/idp')
                     .set('Authorization', 'Bearer ' + validToken)

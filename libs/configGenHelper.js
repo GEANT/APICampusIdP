@@ -26,9 +26,9 @@ const genSso = function (params) {
     res.encryption = certGen.generatex509(attrs);
 
     return res;
-
-
 };
+
+
 
 const genEntityID = function (hostname) {
     return 'https://' + hostname + '/idp';
