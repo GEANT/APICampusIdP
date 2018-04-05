@@ -14,20 +14,25 @@ var getGraph = function (input) {
     /*
     @todo finish to find "@graph" property in deep nested json
      */
+
+
 };
 
 var traversalWalk = function (input) {
 
+
 };
 
 var hideSensitive = function (inputData) {
-    //konsole(JSON.stringify(inputData));
-    // powinno byc inputData.configs , @todo poprzednio byl to object teraz array objectow
-    // @todo fix search for @graph
-    if (inputData.configuration && inputData.configuration.data && inputData.configuration.data['@graph']) {
 
-        konsole(`>>>>>>>> @graph FOUND`);
-       _.find(inputData.configuration.data['@graph'], function (o) {
+    /**
+     * @todo make this independent from the structure
+     */
+    let graphNode = _.get(inputData,['configs','0','flatcompact','@graph']);
+    if (typeof graphNode === 'object') {
+
+        //console.log(`>>>>>>>> @graph FOUND`);
+       _.find(graphNode, function (o) {
             if(o.hasOwnProperty('privateKey')  && _.isString(o.privateKey)) {
                 o.privateKey = { "@type": "hidden"};
             //    console.log(`object for private key:   ${JSON.stringify(o)}`);
@@ -44,7 +49,7 @@ var hideSensitive = function (inputData) {
 
     }
     else {
-        konsole(`>>>>>>>> @graph NOT FOUND`);
+        //console.log(`>>>>>>>> @graph NOT FOUND`);
     }
 
     return inputData;

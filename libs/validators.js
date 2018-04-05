@@ -246,9 +246,6 @@ const processValidation = function (req, res, next) {
             if (idpComponent[0].hasOwnProperty(myVocab + 'metadataProviders') !== true) {
                 return reject('missing metadataProviders property');
             }
-            /**
-             * @todo finish metadataProviders
-             */
 
             processMetadataProviders(idpComponent[0][myVocab + 'metadataProviders']);
 
