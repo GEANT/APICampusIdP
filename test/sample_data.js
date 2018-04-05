@@ -76,7 +76,23 @@ const newIDPConfInput = {
                     "url": "https://edugate.heanet.ie/example-signed-meta.xml",
                     "publicKey": {
                         "@type": "X509Certificate",
-                        "@value": "XYZ"
+                        "@value": "-----BEGIN CERTIFICATE-----" +
+                        "MIICrDCCAZSgAwIBAgIAMA0GCSqGSIb3DQEBCwUAMBoxGDAWBgNVBAMTD2lkcC5l" +
+                        "eGFtcGxlLmNvbTAeFw0xODA0MDQwOTUwMTlaFw0yMzA0MDQwOTUwMTlaMBoxGDAW" +
+                        "BgNVBAMTD2lkcC5leGFtcGxlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC" +
+                        "AQoCggEBAI0AQ7Ov1VSFs8nupHltCQwVxXNJPfzDyCnPUO6yBiXtu+1mPcJT76hi" +
+                        "Tvefe4ilm7t+RFpAjWhUS4gdsK9qfwUXanAQu4znixM6peBxCvgjUaxJGHjX1VuY" +
+                        "3mnM48R/yv6v9rt9cAf5PFsb13/09pHqDerGp9EDVEAUpERA2n4UEBzFXwrnNtyY" +
+                        "DYGTftopQCsk4374za6c20GyuyIxra27IdmONpxlUIYqkcDoWY/puhyrmaFj7eXm" +
+                        "kgwfeH0JwT/S1qd49P989D8ZHA36rSUw23M0QfcXKnRFFH3Os2mu/a/9NxYheYhl" +
+                        "N85BclnkqWB0tTnXCJoBNbIRg/R4WOECAwEAATANBgkqhkiG9w0BAQsFAAOCAQEA" +
+                        "cU3T2fHYG+dGmMmmpXoa1jkQzFkoMDy81tUpS3U/JxXmMs6KYr1VL0O0Sp3uk5zU" +
+                        "E+wvN+Ooo9ELF7aNMc7renfJ1mjrziJ5w+Z8K/Bo8kne3uQf0OnixawvszfdJp4N" +
+                        "n7XXzCjYPikUuJnJi5NHuVc1fNl+rg8r1B37V779nPa/d5x9tmpa8KqKZ5VhBx2a" +
+                        "W3snuvVY5QO60CHtZ5sywDqtdFvE/7zqNXJib3KWUzlymeb6yk562hLgH8g3IDsQ" +
+                        "sxngv+n/nABa1DYTvFgqMT5H8QplUo4LqsrqDk1BEWDa3mqUYyovFoVn5Lysq/5f" +
+                        "72K6XvtsS+7abF2FLlpNwA==" +
+                        "-----END CERTIFICATE-----"
                     }
                 }
             ],

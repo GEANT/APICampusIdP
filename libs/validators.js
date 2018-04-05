@@ -97,8 +97,6 @@ const hasValue = function (el) {
 const validateKeyDescriptor = function (obj) {
 
     if (obj.hasOwnProperty(myVocab + 'use')) {
-
-        console.log('use found');
         if (obj['' + myVocab + 'use'][0] === undefined || obj['' + myVocab + 'use'][0]['@value'] === undefined) {
             return false;
         }
@@ -132,20 +130,39 @@ const validateKeyDescriptor = function (obj) {
 
 };
 
-const processMetadataProvider = function(component){
-    console.log('processMetadataProvider triggered');
+const processMetadataProvider = function (component) {
+    if (checkForType(component, myVocab + 'MetadataProvider') !== true) {
+        throw "One of the nodes in metadataProviders is not MetadataProvider @type";
+    }
+    if (component.hasOwnProperty(myVocab + 'url') !== true) {
+        throw "Missing url property in MetadataProvider @type node";
+    }
+    let urlString = _.get(component, [myVocab + 'url', '0', '@value']);
+    if (validator.isURL(urlString) !== true) {
+        throw "MetadataProvider @type node contains invalid value for url property";
+    }
+    if (component.hasOwnProperty(myVocab + 'publicKey') === true) {
+        if (checkForType(component[myVocab + 'publicKey'][0], '' + myVocab + 'X509Certificate') !== true) {
+            throw "The publicKey property in MetadataProvider @type must contain node of X509Certificate @type";
+        }
+        let tmpPublicKey = _.get(component[myVocab + 'publicKey'][0],['@value']);
+        try {
+            pki.certificateFromPem(tmpPublicKey);
+        } catch (e) {
+            throw "The publicKey property in MetadataProvider : "+e;
+        }
+    }
+    if (component.hasOwnProperty(myVocab+'attrID') !== true){
+        throw "Missing attrID property in MetataProvider @type node";
+    }
 
-    /**
-     * @todo finish processMetadataProvider
-     */
 };
 
-const processMetadataProviders = function(component){
+const processMetadataProviders = function (component) {
 
-    let compLen =component.length;
-    for(let i = 0; i < compLen; i++){
-        if(component.hasOwnProperty(i)){
-            console.log(JSON.stringify(component[i]));
+    let compLen = component.length;
+    for (let i = 0; i < compLen; i++) {
+        if (component.hasOwnProperty(i)) {
             processMetadataProvider(component[i]);
         }
     }
