@@ -23,8 +23,11 @@ const configGenHelper = require('../libs/configGenHelper');
 const generateYaml = require('../libs/idpConfYamlGen').generateYaml;
 const yamljs = require('yamljs');
 const url = require('url');
-
 const eol = require('eol');
+
+const genAnsiblePlaybook = require('../libs/ansiblePlaybook').genPlaybook;
+
+
 const generatesYamlFiles = function (cnf) {
 
     // generate attribute resolver part
@@ -114,6 +117,49 @@ router.post('/:name', verifyToken, serviceValidatorRequest,
 
     }
 );
+
+
+router.get('/ansible/:name', verifyToken, (req, res) => {
+
+
+    let name = req.params.name;
+    let provider = Provider.findOne({name: name});
+    provider.then(
+        (result) => {
+            if (result === null) {
+                res.status(404).json({"error": true, "message": "Not found"});
+            }
+            else {
+
+                let config = result.configs[0].flatcompact;
+
+                let playbook = genAnsiblePlaybook(config);
+
+                playbook.then((result)=>{
+
+                    console.log('FIN4');
+
+                    res.setHeader('Content-type','text/yaml');
+
+                    res.send(result);
+                })
+
+
+
+
+
+
+                //res.json({ error: false, message: "OK Ansible: "+name+"", data: config});
+
+            }
+        }
+    ).catch(err => {
+        res.json(err);
+    });
+
+
+
+});
 
 router.get('/:name', verifyToken, (req, res) => {
     let name = req.params.name;
