@@ -126,6 +126,7 @@ router.get('/:name', verifyToken, (req, res) => {
                 res.status(404).json({"error": true, "message": "Not found"});
             }
             else {
+                let filteredRes = filterOutput(result);
                 res.json(result);
             }
         }
