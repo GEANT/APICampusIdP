@@ -2,12 +2,12 @@ const _ = require('lodash');
 const fs = require('fs');
 const jsonld = require('jsonld');
 const jsonldPromises = jsonld.promises;
-var vocab = require('./apiVocab').context;
-var schema = require('./apiVocab').schema;
+const vocab = require('./apiVocab').context;
+const schema = require('./apiVocab').schema;
 const konsole = require('./konsole');
 
-var context = vocab;
-var myVocab = context['@vocab'];
+const context = vocab;
+const myVocab = context['@vocab'];
 const yaml = require('write-yaml');
 const writeData = require('write-data');
 const json2yaml = require('json2yaml');

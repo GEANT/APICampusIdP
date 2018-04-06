@@ -4,6 +4,7 @@ const keyLength = 2048;
 const min = 1;
 const max = Number.MAX_SAFE_INTEGER;
 const years = 5;
+const eol = require('eol');
 
 const generateX509 = (attrs) => {
     let keys = pki.rsa.generateKeyPair(keyLength);
@@ -20,8 +21,8 @@ const generateX509 = (attrs) => {
     cert.sign(keys.privateKey, forge.md.sha256.create());
     let pem = pki.certificateToPem(cert);
     return {
-        privateKey: pki.privateKeyToPem(keys.privateKey),
-        certificate: pki.certificateToPem(cert)
+        privateKey: eol.auto(pki.privateKeyToPem(keys.privateKey)),
+        certificate: eol.auto(pki.certificateToPem(cert))
     };
 };
 

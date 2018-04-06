@@ -243,7 +243,9 @@ describe('/idp', () => {
                             let configs = p.configs;
                             configs.should.be.an('array');
                             done();
-                        }).catch(err => done(err))
+                        }).catch((err) => {
+                            done(err);
+                        })
                     });
 
             });
