@@ -137,8 +137,6 @@ router.get('/ansible/:name', verifyToken, (req, res) => {
 
                 playbook.then((result) => {
 
-                    console.log('FIN4');
-
                     res.setHeader('Content-type', 'text/yaml');
 
                     res.send(result);

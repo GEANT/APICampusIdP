@@ -13,59 +13,58 @@ const myVocab = context['@vocab'];
 const yaml = require('write-yaml');
 const writeData = require('write-data');
 const json2yaml = require('json2yaml');
+const eol = require('eol');
 
 //const ansibleTemplateFile = fs.open('../etc/an.yml');
 
 
-const genMetadataProviders = function(input, playbook){
+const genMetadataProviders = function (input, playbook) {
 
-   // console.log(JSON.stringify(input['@graph'][0]['components']['idp']['metadataProviders'],null,3));
-    let metaProviders = _.get(input,['@graph','0','components','idp','metadataProviders']);
-    console.log('DDD');
-    console.log(JSON.stringify(metaProviders));
-    console.log('DDD');
-    if(typeof metaProviders === 'undefined'){
+    let metaProviders = _.get(input, ['@graph', '0', 'components', 'idp', 'metadataProviders']);
+    if (typeof metaProviders === 'undefined') {
         throw 'Metadata not found in the config';
     }
 
-    console.log(metaProviders.constructor.name);
+    let metaProvidersList = [];
 
-    playbook.idp_metadata_providers = [];
-    if(metaProviders.constructor.name === 'Object'){
-        let meta = {};
-        meta.id = metaProviders.attrID;
-        meta.url = metaProviders.url;
-        meta.file = 'metaprovider-'+metaProviders.attrID+'.xml';
-        meta.maxValidInterval= 'P5D';
-        meta.disregardTLSCertificate = "false";
-        let ct = _.get(metaProviders,['publicKey','@value']);
-        if(typeof ct !== 'undefined')
-        {
-            meta.pubKey = pki.certificateToPem(pki.certificateFromPem(ct));
-        }
-
-
-        playbook.idp_metadata_providers.push(meta);
+    if (metaProviders.constructor.name === 'Object') {
+        metaProvidersList.push(metaProviders);
     }
     else {
+        metaProvidersList = metaProviders;
+    }
 
-        for (let i = 0; i < metaProviders.length; i++) {
-            let meta = {};
-            meta.id = metaProviders[i].attrID;
-            meta.url = metaProviders[i].url;
-            meta.file = 'metaprovider-' + metaProviders[i].attrID + '.xml';
-            meta.maxValidInterval = 'P5D';
-            meta.disregardTLSCertificate = "false";
-            let ct = pki.certificateFromPem(metaProviders[i].publicKey['@value']);
-            meta.pubKey = pki.certificateToPem(ct);
-            playbook.idp_metadata_providers.push(meta);
+
+
+    playbook.idp_metadata_providers = [];
+
+    for (let i = 0; i < metaProvidersList.length; i++) {
+        let meta = {};
+        meta.id = metaProvidersList[i].attrID;
+        meta.url = metaProvidersList[i].url;
+        meta.file = 'metaprovider-' + metaProvidersList[i].attrID + '.xml';
+        meta.maxValidInterval = 'P5D';
+        meta.disregardTLSCertificate = "false";
+        let ct = eol.crlf(_.get(metaProvidersList, [i, 'publicKey', '@value']));
+        if (typeof ct !== 'undefined') {
+
+            try {
+                let forgeCert = pki.certificateFromPem(ct);
+
+                meta.pubKey = eol.lf(pki.publicKeyToPem(forgeCert.publicKey));
+            } catch (e) {
+                console.log('EERR ' + e);
+            }
 
         }
+
+        playbook.idp_metadata_providers.push(meta);
+
     }
     return playbook;
 };
 
-const genContacts = function(input,playbook){
+const genContacts = function (input, playbook) {
 
 };
 
@@ -80,19 +79,19 @@ const genPlaybook = function (input, version = null) {
     };
 
 
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve, reject) => {
         let frame = {
             "@context": vocab,
             "@type": myVocab + "ServiceDescription"
         };
         const framed = jsonldPromises.frame(input, frame);
-        framed.then((result)=>{
+        framed.then((result) => {
 
             playbook = genMetadataProviders(result, playbook);
 
             let yamlst = json2yaml.stringify(playbook);
             resolve(yamlst);
-        }).catch((err)=>{
+        }).catch((err) => {
             reject(err);
         });
     });

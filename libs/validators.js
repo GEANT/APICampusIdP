@@ -276,11 +276,11 @@ const processValidation = function (req, res, next) {
 
                 certsign['' + myVocab + 'publicKey'].push({
                     '@type': myVocab + 'X509Certificate',
-                    '@value': ssogen.signing.certificate,
+                    '@value': eol.auto(ssogen.signing.certificate),
                 });
 
                 certsign['' + myVocab + 'privateKey'].push({
-                    '@value': ssogen.signing.privateKey
+                    '@value': eol.auto(ssogen.signing.privateKey)
                 });
 
                 certsign['' + myVocab + 'use'].push({
@@ -296,10 +296,10 @@ const processValidation = function (req, res, next) {
                 certenc['@type'] = ['' + myVocab + 'KeyDescriptor'];
                 certenc['' + myVocab + 'publicKey'].push({
                     '@type': myVocab + 'X509Certificate',
-                    '@value': ssogen.encryption.certificate,
+                    '@value': eol.auto(ssogen.encryption.certificate),
                 });
                 certenc['' + myVocab + 'privateKey'].push({
-                    '@value': ssogen.encryption.privateKey
+                    '@value': eol.auto(ssogen.encryption.privateKey)
                 });
 
                 certenc['' + myVocab + 'use'].push({
