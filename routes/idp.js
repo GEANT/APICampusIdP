@@ -43,10 +43,10 @@ router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen
     if (typeof req.inputhostname === 'undefined') {
         return res.status(400).json({"error": true, "message": "Missing hostname"});
     }
-    if(typeof res.locals.entityID === 'undefined'){
+    if (typeof res.locals.entityID === 'undefined') {
         return res.status(400).json({"error": true, "message": "Missing entityid"});
     }
-    if(req.inputhostname !== url.parse(res.locals.entityID).hostname ){
+    if (req.inputhostname !== url.parse(res.locals.entityID).hostname) {
         return res.status(400).json({"error": true, "message": "entityID does not match hostname"});
     }
     let username = res.locals.tokenDecoded.sub;
@@ -135,18 +135,14 @@ router.get('/ansible/:name', verifyToken, (req, res) => {
 
                 let playbook = genAnsiblePlaybook(config);
 
-                playbook.then((result)=>{
+                playbook.then((result) => {
 
                     console.log('FIN4');
 
-                    res.setHeader('Content-type','text/yaml');
+                    res.setHeader('Content-type', 'text/yaml');
 
                     res.send(result);
                 })
-
-
-
-
 
 
                 //res.json({ error: false, message: "OK Ansible: "+name+"", data: config});
@@ -156,7 +152,6 @@ router.get('/ansible/:name', verifyToken, (req, res) => {
     ).catch(err => {
         res.json(err);
     });
-
 
 
 });
@@ -182,9 +177,11 @@ router.get('/:name', verifyToken, (req, res) => {
 });
 
 
-router.get('/:name/:filter', verifyToken, (req, res) => {
+router.get('/:name/:filter/:nodeid?', verifyToken, (req, res) => {
     let name = req.params.name;
     let detail = req.params.filter;
+    let nodeid = req.params.nodeid;
+    console.log(nodeid);
     let pProvider = Provider.findOne({name: name});
     pProvider.then(
         result => {
@@ -192,11 +189,19 @@ router.get('/:name/:filter', verifyToken, (req, res) => {
                 let filteredRes = filterOutput(result);
                 if (detail === 'configuration') {
                     // @todo TEST to store ansible playbook
-                    res.json(filteredRes.configs);
+
+                    if (typeof nodeid !== 'undefined') {
+                        let result2 = _.find(filteredRes.configs[0].flatcompact['@graph'], {'@id': nodeid});
+                        res.json(result2);
+                    }
+                    else {
+
+                        res.json(filteredRes.configs);
+                    }
                 }
-                else if(detail === 'yamlconf'){
+                else if (detail === 'yamlconf') {
                     //console.log('yamlconf: '+JSON.stringify(filteredRes));
-                    let yamlconf = yamljs.stringify(JSON.parse(generateYaml(filteredRes,1)),10);
+                    let yamlconf = yamljs.stringify(JSON.parse(generateYaml(filteredRes, 1)), 10);
                     //res.json({ res: 'yaml'});
                     res.send(yamlconf);
 
@@ -207,7 +212,8 @@ router.get('/:name/:filter', verifyToken, (req, res) => {
 
             }
             else {
-                res.status(404).json({"error": true, "message": "Not found"});
+                res.status(404).json({"error": true, "message": 'Not found'});
+
             }
         }
     ).catch(
@@ -216,10 +222,9 @@ router.get('/:name/:filter', verifyToken, (req, res) => {
         });
 
 
-
 });
 
-router.delete('/:name',verifyToken,actionsIdP.valDelIdPReq, actionsIdP.isAllowedToDelIdP ,actionsIdP.processToDelIdP,(req,res)=>{
+router.delete('/:name', verifyToken, actionsIdP.valDelIdPReq, actionsIdP.isAllowedToDelIdP, actionsIdP.processToDelIdP, (req, res) => {
     res.json({"error": false, "message": "OK"});
 });
 

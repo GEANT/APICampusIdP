@@ -18,6 +18,7 @@ const myVocab = context['@vocab'];
 const validator = require('validator');
 const isValidDomain = require('is-valid-domain');
 const configGenHelper = require('./configGenHelper');
+
 let app;
 
 const genKeyWithPref = function (key) {

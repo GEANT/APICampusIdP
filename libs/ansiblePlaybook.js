@@ -21,6 +21,9 @@ const genMetadataProviders = function(input, playbook){
 
    // console.log(JSON.stringify(input['@graph'][0]['components']['idp']['metadataProviders'],null,3));
     let metaProviders = _.get(input,['@graph','0','components','idp','metadataProviders']);
+    console.log('DDD');
+    console.log(JSON.stringify(metaProviders));
+    console.log('DDD');
     if(typeof metaProviders === 'undefined'){
         throw 'Metadata not found in the config';
     }
@@ -35,8 +38,13 @@ const genMetadataProviders = function(input, playbook){
         meta.file = 'metaprovider-'+metaProviders.attrID+'.xml';
         meta.maxValidInterval= 'P5D';
         meta.disregardTLSCertificate = "false";
-        let ct =  pki.certificateFromPem(metaProviders.publicKey['@value']);
-        meta.pubKey = pki.certificateToPem(ct);
+        let ct = _.get(metaProviders,['publicKey','@value']);
+        if(typeof ct !== 'undefined')
+        {
+            meta.pubKey = pki.certificateToPem(pki.certificateFromPem(ct));
+        }
+
+
         playbook.idp_metadata_providers.push(meta);
     }
     else {
@@ -65,7 +73,11 @@ const genContacts = function(input,playbook){
 const genPlaybook = function (input, version = null) {
 
 
-    let playbook = {};
+    let playbook = {
+        idp_config: {},
+        idp_metadata_providers: {},
+        idp_contacts: {}
+    };
 
 
     return new Promise((resolve,reject)=>{

@@ -8,6 +8,7 @@ const konsole = require('./konsole');
 const context = vocab;
 const myVocab = context['@vocab'];
 const certGen = require('./certsGen');
+const eol = require('eol');
 
 const genKeyWithPref = function (key) {
     return myVocab + key;
