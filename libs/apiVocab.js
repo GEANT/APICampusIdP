@@ -57,6 +57,18 @@ const schema = {
             "rdfs:label": "WebServer"
         },
         {
+            "@id": vocab+"Organization",
+            "@type": "rdfs:Class",
+            "rdfs:comment": "Information about Organization",
+            "rdfs:label": "Organization"
+        },
+        {
+            "@id": vocab+"Contact",
+            "@type": "rdfs:Class",
+            "rdfs:comment": "Information about contact",
+            "rdfs:label": "Contact"
+        },
+        {
             "@id" : vocab+"IdPConf",
             "@type": "rdfs:Class",
             "rdfs:comment": "Identity Provider configuration.",
@@ -185,10 +197,39 @@ const schema = {
             "rdfs:label": "name"
         },
         {
+            "@id" : vocab+"contacts",
+            "@type": "rdf:Property",
+            "rdfs:comment": "Collection of contacts",
+            "rdfs:label": "contacts"
+        },
+        {
+            "@id" : vocab+"email",
+            "@type": "rdf:Property",
+            "rdfs:comment": "Email address",
+            "rdfs:label": "email"
+        },
+        {
+            "@id": vocab+"contactType",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"Contact"
+                },
+            ],
+            "rdfs:comment": "",
+            "rdfs:label": "contactType"
+        },
+        {
             "@id" : vocab+"version",
             "@type": "rdf:Property",
             "rdfs:comment": "version",
             "rdfs:label": "version"
+        },
+        {
+            "@id" : vocab+"organization",
+            "@type": "rdf:Property",
+            "rdfs:comment": "organization",
+            "rdfs:label": "organization"
         },
         {
             "@id" : vocab+"entityID",
