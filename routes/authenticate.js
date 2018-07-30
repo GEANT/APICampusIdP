@@ -3,7 +3,7 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const User = require("../models/User");
-
+const errPrefix = "232";
 router.post("/", function (req, res) {
     const app = req.app;
     const jwtConfig = req.app.get("appConfig").get("jwt");
@@ -12,7 +12,8 @@ router.post("/", function (req, res) {
             .status(401)
             .send({
                 success: false,
-                message: "Authentication failed. Username/Password not provided "
+                message: "Authentication failed. Username/Password not provided ",
+                id: errPrefix+"001"
             });
     } else {
         const name = req.body.name;
@@ -24,7 +25,7 @@ router.post("/", function (req, res) {
                 if(user === null ){
                     res
                         .status(401)
-                        .send({success: false, message: "Authentication failed."});
+                        .send({success: false, message: "Authentication failed.", id: errPrefix+"002"});
                 }
                 else {
                     user.checkPassword(req.body.password, function (err, isMatch) {
@@ -72,7 +73,8 @@ router.post("/", function (req, res) {
                                 .status(401)
                                 .send({
                                     success: false,
-                                    message: "Authentication failed. Wrong password."
+                                    message: "Authentication failed. Wrong password.",
+                                    id: errPrefix+"003"
                                 });
                         }
                     });

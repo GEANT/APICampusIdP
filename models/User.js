@@ -14,7 +14,10 @@ const UserSchema = new Schema({
         required: true,
         select: false
     },
-    email: String,
+    email: {
+        type: String,
+        required: true
+    },
     enabled: {
         type: Boolean,
         default: false
@@ -38,6 +41,8 @@ UserSchema.pre('save', function (next) {
         });
     });
 });
+
+
 
 UserSchema.methods.checkPassword = function (strToCheck, cb) {
     bcrypt.compare(strToCheck, this.password, function (err, isMatch) {

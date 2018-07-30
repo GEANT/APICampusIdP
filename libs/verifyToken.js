@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
-
+const errPrefix= "324";
 module.exports = function (req, res, next) {
     const jwtConfig = req.app.get('appConfig').get('jwt');
     const iss = jwtConfig.iss;
@@ -28,7 +28,7 @@ module.exports = function (req, res, next) {
         jwt.verify(token, secret, { algorithms: [jwtConfig.alg], issuer: jwtConfig.iss}, function (err, decoded) {
             if (err) { //failed verification.
 
-                return res.status(401).json({"error": true, "message": "Authorization failed"});
+                return res.status(401).json({"error": true, "message": "Authorization failed", "id": errPrefix+"001"});
             }
             res.locals.tokenDecoded = decoded;
             next(); //no error, proceed
@@ -38,7 +38,8 @@ module.exports = function (req, res, next) {
         // forbidden without token
         return res.status(401).send({
             "error": true,
-            "message": "Authorization failed."
+            "message": "Authorization failed.",
+            "id": errPrefix+"002"
         });
     }
 };

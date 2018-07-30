@@ -1,5 +1,5 @@
 const konsole = require('./konsole');
-
+const errPrefix= "319";
 const isPropertyArray = function isArray(obj) {
     return !!obj && obj.constructor === Array;
 };

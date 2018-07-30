@@ -12,7 +12,7 @@ const yaml = require('write-yaml');
 const writeData = require('write-data');
 const json2yaml = require('json2yaml');
 
-
+const errPrefix= "317";
 const translateToAnsible = function (input) {
 
     konsole(JSON.stringify(input));

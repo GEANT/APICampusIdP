@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const jsonld = require('jsonld');
 
-
+const errPrefix= "320";
 const konsole = require('./konsole');
 const vocab = require('./apiVocab').context;
 const schema = require('./apiVocab').schema;

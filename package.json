@@ -19,6 +19,7 @@
     "dotenv": "^4.0.0",
     "eol": "^0.9.1",
     "express": "^4.16.3",
+    "express-brute": "^1.0.1",
     "express-urlrewrite": "^1.2.0",
     "is-valid-domain": "0.0.5",
     "jade": "~1.11.0",

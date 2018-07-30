@@ -5,6 +5,7 @@ const min = 1;
 const max = Number.MAX_SAFE_INTEGER;
 const years = 5;
 const eol = require('eol');
+const errPrefix= "315";
 
 const generateX509 = (attrs) => {
     let keys = pki.rsa.generateKeyPair(keyLength);

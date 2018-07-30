@@ -1,7 +1,7 @@
 const file = require('fs');
 const nconf = require('nconf');
 const konsole = require('./konsole');
-
+const errPrefix= "321";
 function Config() {
 
     nconf.argv().env("_");

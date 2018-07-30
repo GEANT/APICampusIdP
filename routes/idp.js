@@ -27,6 +27,7 @@ const eol = require('eol');
 
 const genAnsiblePlaybook = require('../libs/ansiblePlaybook').genPlaybook;
 
+const errorPrefix = "251";
 
 const generatesYamlFiles = function (cnf) {
 
@@ -41,13 +42,13 @@ const generatesYamlFiles = function (cnf) {
  */
 router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen, function (req, res) {
     if (typeof req.inputhostname === 'undefined') {
-        return res.status(400).json({"error": true, "message": "Missing hostname"});
+        return res.status(400).json({"error": true, "message": "Missing hostname", "id": errorPrefix+"001"});
     }
     if (typeof res.locals.entityID === 'undefined') {
-        return res.status(400).json({"error": true, "message": "Missing entityid"});
+        return res.status(400).json({"error": true, "message": "Missing entityid","id": errorPrefix+"002"});
     }
     if (req.inputhostname !== url.parse(res.locals.entityID).hostname) {
-        return res.status(400).json({"error": true, "message": "entityID does not match hostname"});
+        return res.status(400).json({"error": true, "message": "entityID does not match hostname","id": errorPrefix+"003"});
     }
     let username = res.locals.tokenDecoded.sub;
     let pQuery = Provider.findOne({name: req.inputhostname});
@@ -58,7 +59,7 @@ router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen
         let doc = results[0];
         let user = results[1];
         if (doc !== null) {
-            return res.status(409).json({"error": true, "message": "host already exist"});
+            return res.status(409).json({"error": true, "message": "host already exist","id": errorPrefix+"004"});
         }
         let confVersion = uuidv1();
         let newProvider = new Provider({
@@ -82,7 +83,8 @@ router.post('/', verifyToken, serviceValidatorRequest, configGenHelper.configGen
         }, (err) => {
             res.status(500).json({
                 'error': true,
-                'message': err
+                'message': err,
+                'id': errorPrefix+'005'
             });
         });
 
@@ -97,7 +99,7 @@ router.post('/:name', verifyToken, serviceValidatorRequest,
     (req, res, next) => {
         let name = req.params.name;
         if (typeof req.inputhostname === 'undefined') {
-            return res.status(400).json({"error": true, "message": "Missing hostname"});
+            return res.status(400).json({"error": true, "message": "Missing hostname","id": errorPrefix+"006"});
         }
 
 
@@ -108,7 +110,7 @@ router.post('/:name', verifyToken, serviceValidatorRequest,
                     res.json(result.data)
                 }
                 else {
-                    res.status(404).json({"error": true, "message": "Not found"});
+                    res.status(404).json({"error": true, "message": "Not found","id": errorPrefix+"007"});
                 }
             }
         ).catch(err => {
@@ -127,7 +129,7 @@ router.get('/ansible/:name', verifyToken, (req, res) => {
     provider.then(
         (result) => {
             if (result === null) {
-                res.status(404).json({"error": true, "message": "Not found"});
+                res.status(404).json({"error": true, "message": "Not found","id": errorPrefix+"008"});
             }
             else {
 
@@ -148,7 +150,7 @@ router.get('/ansible/:name', verifyToken, (req, res) => {
             }
         }
     ).catch(err => {
-        res.json(err);
+        res.json({error: true, message: err,id: errorPrefix+"009"});
     });
 
 
@@ -162,7 +164,7 @@ router.get('/:name', verifyToken, (req, res) => {
     provider.then(
         (result) => {
             if (result === null) {
-                res.status(404).json({"error": true, "message": "Not found"});
+                res.status(404).json({"error": true, "message": "Not found","id": errorPrefix+"010"});
             }
             else {
                 let filteredRes = filterOutput(result);
@@ -170,7 +172,7 @@ router.get('/:name', verifyToken, (req, res) => {
             }
         }
     ).catch(err => {
-        res.json(err);
+        res.json({error: true, message: err, id: errorPrefix+"011"});
     });
 });
 
@@ -210,7 +212,7 @@ router.get('/:name/:filter/:nodeid?', verifyToken, (req, res) => {
 
             }
             else {
-                res.status(404).json({"error": true, "message": 'Not found'});
+                res.status(404).json({"error": true, "message": 'Not found',"id": errorPrefix+"012"});
 
             }
         }
@@ -220,6 +222,49 @@ router.get('/:name/:filter/:nodeid?', verifyToken, (req, res) => {
         });
 
 
+});
+
+router.get('/', verifyToken, (req, res) => {
+
+    //res.json({xvxcv: "f"});
+
+
+    let providers = Provider.find();
+    providers.then(
+        (result) => {
+            let output = {
+                '@context': "https://schema.org",
+                '@type': "Collection",
+                'members': []
+            };
+            for(let i = 0; i < result.length; i++ ){
+
+                if(result[i].name){
+                    output.members.push(
+                        {
+                            "@id": result[i].url,
+                            "name": result[i].name,
+                            "status": result[i].status
+                        }
+                    );
+                }
+                else {
+                    console.log('no name for i: '+i);
+                }
+
+
+            }
+            if (result === null) {
+                res.status(404).json({"error": true, "message": "Not found","id": errorPrefix+"013"});
+            }
+            else {
+                let filteredRes = filterOutput(result);
+                res.json(output);
+            }
+        }
+    ).catch(err => {
+        res.json(err);
+    });
 });
 
 router.delete('/:name', verifyToken, actionsIdP.valDelIdPReq, actionsIdP.isAllowedToDelIdP, actionsIdP.processToDelIdP, (req, res) => {

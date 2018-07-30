@@ -7,7 +7,7 @@ const schema = require('./apiVocab').schema;
 
 const context = vocab;
 const myVocab = context['@vocab'];
-
+const errPrefix= "318";
 var getGraph = function (input) {
 
 

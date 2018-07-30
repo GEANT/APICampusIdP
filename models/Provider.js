@@ -38,7 +38,11 @@ var ProviderSchema = new Schema({
         ref: 'User'
     }
 }, {collection: 'providers'});
-
+ProviderSchema
+.virtual('url')
+.get(function () {
+  return '/idp/' + this.name;
+});
 
 ProviderSchema.plugin(version, {
     strategy: 'collection',

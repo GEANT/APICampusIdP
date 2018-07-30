@@ -15,7 +15,7 @@ const konsole = require('./konsole');
 
 const validator = require('validator');
 const isValidDomain = require('is-valid-domain');
-
+const errPrefix= "312";
 
 const valDelIdPReq = function (req, res, next) {
 

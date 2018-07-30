@@ -11,6 +11,18 @@ router.get('/', function (req, res, next) {
             "authentication" : {
                 "url": req.app.get('baseurl')+'authenticate',
                 "methods" : "post"
+            },
+            "registration":{
+                "url": req.app.get('baseurl')+'users/register',
+                "methods": "post"
+            },
+            "user" : {
+                "url" : req.app.get('baseurl')+'users',
+                "methods" : ["post","get"]
+            },
+            "idp" : {
+                "url": req.app.get('baseurl')+'idp',
+                "methods" : ["post", "get", "delete", "put"]
             }
         }
     };

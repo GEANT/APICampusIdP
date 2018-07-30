@@ -18,7 +18,7 @@ const myVocab = context['@vocab'];
 const validator = require('validator');
 const isValidDomain = require('is-valid-domain');
 const configGenHelper = require('./configGenHelper');
-
+const errPrefix= "323";
 let app;
 
 const genKeyWithPref = function (key) {

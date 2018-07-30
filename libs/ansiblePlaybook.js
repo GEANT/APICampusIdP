@@ -14,7 +14,7 @@ const yaml = require('write-yaml');
 const writeData = require('write-data');
 const json2yaml = require('json2yaml');
 const eol = require('eol');
-
+const errPrefix= "313";
 //const ansibleTemplateFile = fs.open('../etc/an.yml');
 
 

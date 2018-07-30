@@ -1,6 +1,6 @@
 'use strict'
 const vocab = "http://geant.org/schema/campusidp/";
-
+const errPrefix= "314";
 const context = {
     "@vocab": vocab,
     "xsd": "http://www.w3.org/2001/XMLSchema#",
