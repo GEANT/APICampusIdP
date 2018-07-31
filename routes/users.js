@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const _ = require('lodash');
 const User = require('../models/User');
 const konsole = require('../libs/konsole');
 const verifyToken = require('../libs/verifyToken');
@@ -9,7 +10,7 @@ const ExpressBrute = require('express-brute');
 // store for dev only
 const store = new ExpressBrute.MemoryStore();
 const bruteforce = new ExpressBrute(store);
-
+const validateRegisterInput = require('../libs/validations/registerUser');
 
 /* GET users listing. */
 router.get('/', verifyToken,function (req, res, next) {
@@ -24,7 +25,12 @@ router.get('/', verifyToken,function (req, res, next) {
 
 /* register new user */
 router.post('/register', bruteforce.prevent, function (req, res) {
-    const errors = {};
+    const { errors, isValid } = validateRegisterInput(req.body);
+    // Check Validation
+    if (!isValid) {
+        return res.status(400).json({error: true, message: errors, id: errPrefix+'003'});
+    }
+    //const errors = {};
     User.findOne({$or: [{email: req.body.email}, {username: req.body.username}]}).then(user => {
         if (user) {
             errors.email = 'Email/username already exists';
@@ -37,9 +43,10 @@ router.post('/register', bruteforce.prevent, function (req, res) {
             });
             newUser
                 .save()
-                .then(user => res.json(user))
+                .then(user => {
+                    res.json(_.pick(user.toJSON(),['_id','username','email']));
+                })
                 .catch((err) => {
-
                     console.log(err);
                     return res.status(400).json({ error: true, message: err, id: errPrefix+"002"});
                 });
