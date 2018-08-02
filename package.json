@@ -25,7 +25,7 @@
     "is-valid-domain": "0.0.5",
     "jade": "~1.11.0",
     "json2yaml": "^1.1.0",
-    "jsonld": "^0.5.20",
+    "jsonld": "^1.0.2",
     "jsonwebtoken": "^8.2.0",
     "lodash": "^4.17.5",
     "moment": "^2.22.2",
