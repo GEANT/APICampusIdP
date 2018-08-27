@@ -105,6 +105,20 @@ const schema = {
             "rdfs:label": "X509Certificate"
         },
         {
+            "@id" : vocab+"logo",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"WebServer"
+                },
+                {
+                    "@id" : vocab+"Organization"
+                }
+            ],
+            "rdfs:comment": "Logo",
+            "rdfs:label": "logo"
+        },
+        {
             "@id" : vocab+"hostname",
             "@type": "rdf:Property",
             "http://schema.org/domainIncludes" : [
@@ -195,6 +209,12 @@ const schema = {
             "@type": "rdf:Property",
             "rdfs:comment": "Name property. Can be used by any node",
             "rdfs:label": "name"
+        },
+        {
+            "@id" : vocab+"members",
+            "@type": "rdf:Property",
+            "rdfs:comment": "members",
+            "rdfs:label": "members"
         },
         {
             "@id" : vocab+"contacts",

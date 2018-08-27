@@ -107,7 +107,7 @@ router.post('/:name', verifyToken, serviceValidatorRequest,
         pPromise.then(
             (result) => {
                 if (result !== null) {
-                    res.json(result.data)
+                    res.json(result.data);
                 }
                 else {
                     res.status(404).json({"error": true, "message": "Not found","id": errorPrefix+"007"});
@@ -142,7 +142,7 @@ router.get('/ansible/:name', verifyToken, (req, res) => {
                     res.setHeader('Content-type', 'text/yaml');
 
                     res.send(result);
-                })
+                });
 
 
                 //res.json({ error: false, message: "OK Ansible: "+name+"", data: config});
@@ -207,7 +207,7 @@ router.get('/:name/:filter/:nodeid?', verifyToken, (req, res) => {
 
                 }
                 else {
-                    res.json(filteredRes)
+                    res.json(filteredRes);
                 }
 
             }
@@ -233,7 +233,7 @@ router.get('/', verifyToken, (req, res) => {
     providers.then(
         (result) => {
             let output = {
-                '@context': "https://schema.org",
+                '@context': vocab,
                 '@type': "Collection",
                 'members': []
             };
@@ -243,6 +243,7 @@ router.get('/', verifyToken, (req, res) => {
                     output.members.push(
                         {
                             "@id": result[i].url,
+                            "@type": "ServiceDescription",
                             "name": result[i].name,
                             "status": result[i].status
                         }

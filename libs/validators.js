@@ -18,7 +18,7 @@ const myVocab = context['@vocab'];
 const validator = require('validator');
 const isValidDomain = require('is-valid-domain');
 const configGenHelper = require('./configGenHelper');
-const errPrefix= "323";
+const errPrefix = "323";
 let app;
 
 const genKeyWithPref = function (key) {
@@ -65,13 +65,29 @@ const validateWithSchema = function (obj) {
                 }
             }
             else if (!prop.startsWith('@') && isNaN(prop)) {
-                // konsole(`Property name found: ${prop}`);
                 let y = _.find(schema['@graph'], function (o) {
                     return o['@id'] == prop && o['@type'] == 'rdf:Property';
                 });
                 if (typeof  y === 'undefined') {
                     throw `Property name ${prop} is not recognized by the schema`;
                 }
+                if (y.hasOwnProperty('http://schema.org/domainIncludes')) {
+                    let parentType = obj['@type'];
+                    if(typeof parentType !== 'undefined') {
+                        let zx = _.find(y['http://schema.org/domainIncludes'], function (o) {
+                            return o['@id'] == parentType;
+                        });
+                        if (typeof zx === 'undefined') {
+                            throw `Property name ${y['@id']} is not allowed in ${parentType} by the schema`;
+                        }
+                    }
+                    /**
+                     * @todo validate when parent is a property
+                     */
+
+
+                }
+
             }
             if (typeof obj[prop] === 'object') {
                 validateWithSchema(obj[prop]);
@@ -146,14 +162,14 @@ const processMetadataProvider = function (component) {
         if (checkForType(component[myVocab + 'publicKey'][0], '' + myVocab + 'X509Certificate') !== true) {
             throw "The publicKey property in MetadataProvider @type must contain node of X509Certificate @type";
         }
-        let tmpPublicKey = _.get(component[myVocab + 'publicKey'][0],['@value']);
+        let tmpPublicKey = _.get(component[myVocab + 'publicKey'][0], ['@value']);
         try {
             pki.certificateFromPem(tmpPublicKey);
         } catch (e) {
-            throw "The publicKey property in MetadataProvider : "+e;
+            throw "The publicKey property in MetadataProvider : " + e;
         }
     }
-    if (component.hasOwnProperty(myVocab+'attrID') !== true){
+    if (component.hasOwnProperty(myVocab + 'attrID') !== true) {
         throw "Missing attrID property in MetataProvider @type node";
     }
 
