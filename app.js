@@ -94,8 +94,9 @@ mongoose.Promise = global.Promise;
 const version = require('mongoose-version');
 if(process.env.NODE_ENV !== 'test') {
     mongoose.connect(db_uri, {
-        useMongoClient: true,
+       // useMongoClient: true,
         /* other options */
+        userNewUrlParser: true
     }).then().catch(err => {
 
         console.log('ZZZZZ');

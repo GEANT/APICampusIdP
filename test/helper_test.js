@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://idpapi_test:idpapi_test@localhost/idpapi_test', {
-    useMongoClient: true
+    useNewUrlParser: true
 });
 mongoose.connection
     .once('open', () => {
