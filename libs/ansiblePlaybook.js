@@ -65,7 +65,21 @@ const genMetadataProviders = function (input, playbook) {
 };
 
 const genContacts = function (input, playbook) {
+    let contacts = _.get(input, ['@graph', '0', 'organization', 'contacts']);
+    if (typeof contacts === 'undefined') {
+        throw 'Contacts not found in the config';
+    }
 
+    for (let i = 0; i < contacts.length; i++) {
+        let contactType = contacts[i].contactType;
+        let cnt = {
+            email: contacts[i].email,
+            givenName: contacts[i].name
+        };
+
+        playbook.idp_contacts[contactType] = cnt;
+    }
+    return playbook;
 };
 
 
@@ -82,12 +96,14 @@ const genPlaybook = function (input, version = null) {
     return new Promise((resolve, reject) => {
         let frame = {
             "@context": vocab,
-            "@type": myVocab + "ServiceDescription"
+          "@type": myVocab + "ServiceDescription"
         };
+        //console.log(JSON.stringify(result,null,2));
+
         const framed = jsonldPromises.frame(input, frame);
         framed.then((result) => {
-
             playbook = genMetadataProviders(result, playbook);
+            playbook = genContacts(result,playbook);
 
             let yamlst = json2yaml.stringify(playbook);
             resolve(yamlst);
