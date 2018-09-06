@@ -26,7 +26,7 @@ const url = require('url');
 const eol = require('eol');
 
 const genAnsiblePlaybook = require('../libs/ansiblePlaybook').genPlaybook;
-
+const verifyAStoken = require('../libs/verifyAStoken');
 const errorPrefix = "251";
 
 const generatesYamlFiles = function (cnf) {
@@ -121,7 +121,7 @@ router.post('/:name', verifyToken, serviceValidatorRequest,
 );
 
 
-router.get('/ansible/:name', verifyToken, (req, res) => {
+router.get('/ansible/:name', verifyToken, verifyAStoken, (req, res) => {
 
 
     let name = req.params.name;
