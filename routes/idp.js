@@ -142,6 +142,10 @@ router.get('/ansible/:name', verifyToken, verifyAStoken, (req, res) => {
                     res.setHeader('Content-type', 'text/yaml');
 
                     res.send(result);
+                }).catch(err => {
+                    console.log(err);
+                     res.json({error: true, message: err, id: errorPrefix+"009"});
+
                 });
 
 

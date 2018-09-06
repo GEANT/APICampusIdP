@@ -301,6 +301,9 @@ const schema = {
             "http://schema.org/domainIncludes" : [
                 {
                     "@id" : vocab+"MetadataProvider"
+                },
+                {
+                    "@id" : vocab+"Organization"
                 }
             ],
             "rdfs:comment": "URL ",
