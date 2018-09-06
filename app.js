@@ -96,7 +96,7 @@ if(process.env.NODE_ENV !== 'test') {
     mongoose.connect(db_uri, {
        // useMongoClient: true,
         /* other options */
-        userNewUrlParser: true
+        useNewUrlParser: true
     }).then().catch(err => {
 
         console.log('ZZZZZ');
