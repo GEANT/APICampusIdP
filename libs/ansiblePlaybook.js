@@ -18,6 +18,19 @@ const errPrefix= "313";
 //const ansibleTemplateFile = fs.open('../etc/an.yml');
 
 
+const genEntityID = function (input, playbook) {
+    let entity =  _.get(input, ['@graph','0', 'components','idp','entityID']);
+    playbook.idp_entityID = entity;
+
+    return playbook;
+};
+
+const getIdpMetadata = function (input , playbook){
+    /**
+     * @todo finish
+     */
+};
+
 const genMetadataProviders = function (input, playbook) {
 
     let metaProviders = _.get(input, ['@graph', '0', 'components', 'idp', 'metadataProviders']);
@@ -90,6 +103,7 @@ const genPlaybook = function (input, version = null) {
         idp_config: {},
         idp_metadata_providers: {},
         idp_contacts: {}
+
     };
 
 
@@ -98,12 +112,11 @@ const genPlaybook = function (input, version = null) {
             "@context": vocab,
           "@type": myVocab + "ServiceDescription"
         };
-        //console.log(JSON.stringify(result,null,2));
-
         const framed = jsonldPromises.frame(input, frame);
         framed.then((result) => {
             playbook = genMetadataProviders(result, playbook);
             playbook = genContacts(result,playbook);
+            genEntityID(result,playbook);
 
             let yamlst = json2yaml.stringify(playbook);
             resolve(yamlst);
