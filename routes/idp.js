@@ -121,7 +121,7 @@ router.post('/:name', verifyToken, serviceValidatorRequest,
 );
 
 
-router.get('/ansible/:name', verifyToken, verifyAStoken, (req, res) => {
+router.get('/ansible/:name', verifyAStoken, (req, res) => {
 
 
     let name = req.params.name;
