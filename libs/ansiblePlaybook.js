@@ -29,18 +29,18 @@ const genOrgInfo = function (input, playbook){
 
     let res = _.get(input, ['@graph', '0', 'organization']);
     if(! playbook.hasOwnProperty('idp_metadata')){
-        playbook.idp_metadata = {};
+        playbook.md = {};
     }
-    if(! playbook.idp_metadata.hasOwnProperty('en')){
-        playbook.idp_metadata.en = {};
+    if(! playbook.md.hasOwnProperty('en')){
+        playbook.md.en = {};
     }
 
-    playbook.idp_metadata.en.org_name = res.name;
-    playbook.idp_metadata.en.org_displayName = res.name;
-    playbook.idp_metadata.en.org_url = res.url;
-    playbook.idp_metadata.en.mdui_displayName =  res.name;
-    playbook.idp_metadata.en.mdui_infoUrl = res.url;
-    playbook.idp_metadata.en.mdui_logo = res.logo;
+    playbook.md.en.org_name = res.name;
+    playbook.md.en.org_displayName = res.name;
+    playbook.md.en.org_url = res.url;
+    playbook.md.en.mdui_displayName =  res.name;
+    playbook.md.en.mdui_infoUrl = res.url;
+    playbook.md.en.mdui_logo = res.logo;
     return playbook;
 };
 
@@ -158,6 +158,7 @@ const genPlaybook = function (input, version = null) {
     let playbook = {
         fqdn: null,
         idp: {},
+        md: {},
         contacts: {}
 
     };
