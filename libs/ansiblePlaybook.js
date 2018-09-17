@@ -20,7 +20,7 @@ const errPrefix= "313";
 
 const genEntityID = function (input, playbook) {
     let entity =  _.get(input, ['@graph','0', 'components','idp','entityID']);
-    playbook.idp_entityID = entity;
+    playbook.idp.entityID = entity;
 
     return playbook;
 };
@@ -68,7 +68,7 @@ const genMetadataProviders = function (input, playbook) {
 
 
 
-    playbook.idp_metadata_providers = [];
+    playbook.idp.metadata_providers = [];
 
     for (let i = 0; i < metaProvidersList.length; i++) {
         let meta = {};
@@ -90,7 +90,7 @@ const genMetadataProviders = function (input, playbook) {
 
         }
 
-        playbook.idp_metadata_providers.push(meta);
+        playbook.idp.metadata_providers.push(meta);
 
     }
     return playbook;
@@ -109,7 +109,7 @@ const genFqdn = function (input, playbook){
     }
     playbook.fqdn = res.hostname;
     return playbook;
-}
+};
 
 const genContacts = function (input, playbook) {
     let contacts = _.get(input, ['@graph', '0', 'organization', 'contacts']);
@@ -124,13 +124,16 @@ const genContacts = function (input, playbook) {
         }
         for (let i = 0; i < contacts.length; i++) {
             let contactType = contacts[i].contactType;
+            if(!playbook.contacts.hasOwnProperty(contactType)){
+                playbook.contacts[contactType] = [];
+            }
 
             console.log(contactType);
             let cnt = {
                 email: contacts[i].email,
-                givenName: contacts[i].name
+                name: contacts[i].name
             };
-            playbook.idp_contacts[contactType] = cnt;
+            playbook.contacts[contactType].push(cnt);
         }
     }
     else {
@@ -141,9 +144,9 @@ const genContacts = function (input, playbook) {
         }
         let cnt = {
             email: contacts.email,
-            givenName: contacts.name
+            name: contacts.name
         };
-        playbook.idp_contacts[contactType] = cnt;
+        playbook.contacts[contactType] = cnt;
     }
     return playbook;
 };
@@ -153,11 +156,12 @@ const genPlaybook = function (input, version = null) {
 
 
     let playbook = {
-        idp_config: {},
-        idp_metadata_providers: {},
-        idp_contacts: {}
+        fqdn: null,
+        idp: {},
+        contacts: {}
 
     };
+    playbook.idp.metadata_providers = {};
 
 
     return new Promise((resolve, reject) => {
