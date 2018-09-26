@@ -33,12 +33,80 @@ const genOrgInfo = function (input, playbook) {
         playbook.idp.md.en = {};
     }
 
-    playbook.idp.md.en.org_name = res.name;
-    playbook.idp.md.en.org_displayName = res.name;
+    let tmpResName = [];
+
+    if (Array.isArray(res.name)) {
+        tmpResName = res.name;
+    }
+    else {
+        tmpResName.push(res.name);
+    }
+    for (let i = 0; i < tmpResName.length; i++) {
+        let tmpName = tmpResName[i];
+        if (tmpName.hasOwnProperty('@value')) {
+            if (tmpName.hasOwnProperty('@language')) {
+                let nlang = tmpName['@language'];
+                if (!playbook.idp.md.hasOwnProperty(nlang)) {
+                    playbook.idp.md[nlang] = {};
+                }
+                playbook.idp.md[nlang].org_name = tmpName['@value'];
+                playbook.idp.md[nlang].org_displayname = tmpName['@value'];
+                playbook.idp.md[nlang].mdui_displayname = tmpName['@value'];
+            } else {
+                playbook.idp.md.en.org_name = tmpName['@value'];
+                playbook.idp.md.en.org_displayName = tmpName['@value'];
+                playbook.idp.md.en.mdui_displayName = tmpName['@value'];
+            }
+        }
+        else {
+            playbook.idp.md.en.org_name = tmpName;
+            playbook.idp.md.en.org_displayName = tmpName;
+            playbook.idp.md.en.mdui_displayName = tmpName;
+        }
+    }
+
+
+//    playbook.idp.md.en.mdui_logo = res.logo;
+    if(typeof res.logo !== "undefined"){
+        getLogo(res,playbook);
+    }
+    return playbook;
+
+}
+
+const getLogo = function (res, playbook) {
+    let tmpLogoName = [];
+
+    if (Array.isArray(res.logo)) {
+        tmpLogoName = res.logo;
+    }
+    else {
+        if (typeof res.log !== 'undefined') {
+            tmpLogoName.push(res.logo);
+        }
+    }
+
+
+    for (let i = 0; i < tmpLogoName.length; i++) {
+        let tmpName = tmpLogoName[i];
+        if (tmpName.hasOwnProperty('@value')) {
+            if (tmpName.hasOwnProperty('@language')) {
+                let nlang = tmpName['@language'];
+                if (!playbook.idp.md.hasOwnProperty(nlang)) {
+                    playbook.idp.md[nlang] = {};
+                }
+                playbook.idp.md[nlang].mdui_logo = tmpName['@value'];
+            } else {
+                playbook.idp.md.en.mdui_logo = tmpName['@value'];
+            }
+        }
+        else {
+            playbook.idp.md.en.mdui_logo = tmpName;
+        }
+    }
+
     playbook.idp.md.en.org_url = res.url;
-    playbook.idp.md.en.mdui_displayName = res.name;
     playbook.idp.md.en.mdui_infoUrl = res.url;
-    playbook.idp.md.en.mdui_logo = res.logo;
     return playbook;
 };
 
@@ -54,17 +122,17 @@ const getSSOScopes = function (input, playbook) {
         return playbook;
     }
     if (Array.isArray(scopesMeta)) {
-        if(scopesMeta.length === 0){
+        if (scopesMeta.length === 0) {
             return playbook;
         }
-        if(!playbook.idp.hasOwnProperty('scope')){
+        if (!playbook.idp.hasOwnProperty('scope')) {
             playbook.idp.scope = [];
         }
         for (let i = 0; i < scopesMeta.length; i++) {
             playbook.idp.scope.push(scopesMeta[i]);
         }
-    }else{
-        if(!playbook.idp.hasOwnProperty('scope')){
+    } else {
+        if (!playbook.idp.hasOwnProperty('scope')) {
             playbook.idp.scope = [];
         }
         playbook.idp.scope.push(scopesMeta);
@@ -120,34 +188,34 @@ const genMetadataProviders = function (input, playbook) {
     return playbook;
 };
 
-const genSystem = function(input, playbook){
-  if(!playbook.hasOwnProperty('sys')){
-      playbook.sys = {};
-  }
-  playbook.sys.swap = '2';
-  playbook.sys.ntp1 = 'ntp1.inrim.it';
-  playbook.sys.ntp2 = 'ntp2.inrim.it';
-  playbook.sys.ntp3 = '0.it.pool.ntp.org';
+const genSystem = function (input, playbook) {
+    if (!playbook.hasOwnProperty('sys')) {
+        playbook.sys = {};
+    }
+    playbook.sys.swap = '2';
+    playbook.sys.ntp1 = 'ntp1.inrim.it';
+    playbook.sys.ntp2 = 'ntp2.inrim.it';
+    playbook.sys.ntp3 = '0.it.pool.ntp.org';
 
     /**
      * @todo overwrite if provided
      */
 
-  return playbook;
+    return playbook;
 
 
 };
 
 
-const genWeb = function(input, playbook){
-  // set default first
-    if(!playbook.hasOwnProperty('web')){
+const genWeb = function (input, playbook) {
+    // set default first
+    if (!playbook.hasOwnProperty('web')) {
         playbook.web = {};
     }
-    if(!playbook.web.hasOwnProperty('footer_text_color')){
+    if (!playbook.web.hasOwnProperty('footer_text_color')) {
         playbook.web.footer_text_color = '#ffffff';
     }
-    if(!playbook.web.hasOwnProperty('footer_background_color')){
+    if (!playbook.web.hasOwnProperty('footer_background_color')) {
         playbook.web.footer_background_color = '#39d024';
     }
 
@@ -158,25 +226,25 @@ const genWeb = function(input, playbook){
     return playbook;
 };
 
-const genSSOKeys = function(input, playbook){
+const genSSOKeys = function (input, playbook) {
 
 
-    let res = _.get(input, ['@graph', '0', 'components', 'idp','sso', 'certificates']);
+    let res = _.get(input, ['@graph', '0', 'components', 'idp', 'sso', 'certificates']);
     if (typeof res === 'undefined') {
         throw 'sso keys not found';
     }
     if (Array.isArray(res)) {
 
-        if(res.length === 0){
+        if (res.length === 0) {
             throw 'sso keys not found';
         }
-        if(!playbook.idp.hasOwnProperty('sso_keys')){
+        if (!playbook.idp.hasOwnProperty('sso_keys')) {
             playbook.idp.sso_keys = [];
         }
         for (let i = 0; i < res.length; i++) {
             let nKey = {};
-            if(res[i].hasOwnProperty('use')){
-                if(res[i].use === 'signing'){
+            if (res[i].hasOwnProperty('use')) {
+                if (res[i].use === 'signing') {
                     nKey.use = 'sign';
                 }
                 else {
@@ -185,19 +253,19 @@ const genSSOKeys = function(input, playbook){
             }
             nKey.privKey = res[i].privateKey;
             nKey.pubKey = res[i].publicKey;
-            if(res[i].hasOwnProperty('password')){
+            if (res[i].hasOwnProperty('password')) {
                 nKey.password = res[i].password;
             }
 
             playbook.idp.sso_keys.push(nKey);
         }
-    }else{
-        if(!playbook.idp.hasOwnProperty('sso_keys')){
+    } else {
+        if (!playbook.idp.hasOwnProperty('sso_keys')) {
             playbook.idp.sso_keys = [];
         }
         let nKey = {};
-        if(res.hasOwnProperty('use')){
-            if(res.use === 'signing'){
+        if (res.hasOwnProperty('use')) {
+            if (res.use === 'signing') {
                 nKey.use = 'sign';
             }
             else {
@@ -206,7 +274,7 @@ const genSSOKeys = function(input, playbook){
         }
         nKey.privKey = res.privateKey;
         nKey.pubKey = res.publicKey;
-        if(res.hasOwnProperty('password')){
+        if (res.hasOwnProperty('password')) {
             nKey.password = res.password;
         }
 
@@ -229,9 +297,11 @@ const genFqdn = function (input, playbook) {
     }
     playbook.fqdn = res.hostname;
 
-    if(typeof  res.logo !== "undefined" && res.log !== ''){
-        playbook.idp.md.en.mdui_logo = res.logo;
+    if (typeof  res.logo !== "undefined" && res.log !== '') {
+
+        getLogo(res,playbook);
     }
+
 
 
     return playbook;
@@ -282,23 +352,18 @@ const genPlaybook = function (input, version = null) {
         idp: {
             sup_rs: 'no',
             sup_coco: 'no',
-            md : {
-                en: {
-
-                }
+            md: {
+                en: {}
             },
             metadata_providers: {}
         },
         contacts: {},
-        web: {
-
-        },
-        sys : {
+        web: {},
+        sys: {
             my_timezone: 'utc'
         }
 
     };
-
 
 
     return new Promise((resolve, reject) => {
@@ -311,12 +376,12 @@ const genPlaybook = function (input, version = null) {
             genOrgInfo(result, playbook);
             genFqdn(result, playbook);
             genMetadataProviders(result, playbook);
-            getSSOScopes(result,playbook);
+            getSSOScopes(result, playbook);
             genContacts(result, playbook);
             genEntityID(result, playbook);
-            genSSOKeys(result,playbook);
-            genWeb(result,playbook);
-            genSystem(result,playbook);
+            genSSOKeys(result, playbook);
+            genWeb(result, playbook);
+            genSystem(result, playbook);
 
             let yamlst = json2yaml.stringify(playbook);
             resolve(yamlst);

@@ -84,8 +84,21 @@ const validateWithSchema = function (obj) {
                     /**
                      * @todo validate when parent is a property
                      */
+                }
+                if(prop === genKeyWithPref('logo')){
+                    console.log('>>>>>>>>>>>>>>>> LOGO <<<<<<<<<<<<<<<');
+                    for( let i = 0 ; i < obj[prop].length; i++){
+                        let tmpLogo = obj[prop][i]['@value'];
+                        if(typeof tmpLogo !== 'undefined' ){
+                              let isUrl = validator.isURL(tmpLogo);
+                              if(!isUrl){
+                                  throw 'Logo: only url is supported at the moment';
+                              }
+                        }
+                    }
 
-
+                    //console.log(prop);
+                    //console.log(obj[prop]);
                 }
 
             }
