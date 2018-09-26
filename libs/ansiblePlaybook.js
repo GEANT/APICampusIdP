@@ -28,19 +28,17 @@ const genEntityID = function (input, playbook) {
 const genOrgInfo = function (input, playbook) {
 
     let res = _.get(input, ['@graph', '0', 'organization']);
-    if (!playbook.hasOwnProperty('idp_metadata')) {
-        playbook.md = {};
-    }
-    if (!playbook.md.hasOwnProperty('en')) {
-        playbook.md.en = {};
+
+    if (!playbook.idp.md.hasOwnProperty('en')) {
+        playbook.idp.md.en = {};
     }
 
-    playbook.md.en.org_name = res.name;
-    playbook.md.en.org_displayName = res.name;
-    playbook.md.en.org_url = res.url;
-    playbook.md.en.mdui_displayName = res.name;
-    playbook.md.en.mdui_infoUrl = res.url;
-    playbook.md.en.mdui_logo = res.logo;
+    playbook.idp.md.en.org_name = res.name;
+    playbook.idp.md.en.org_displayName = res.name;
+    playbook.idp.md.en.org_url = res.url;
+    playbook.idp.md.en.mdui_displayName = res.name;
+    playbook.idp.md.en.mdui_infoUrl = res.url;
+    playbook.idp.md.en.mdui_logo = res.logo;
     return playbook;
 };
 
@@ -133,7 +131,7 @@ const genSystem = function(input, playbook){
   playbook.sys.ntp3 = '0.it.pool.ntp.org';
 
     /**
-     * @todo overwrite if provided 
+     * @todo overwrite if provided
      */
 
   return playbook;
@@ -280,12 +278,19 @@ const genPlaybook = function (input, version = null) {
 
     let playbook = {
         fqdn: null,
-        idp: {},
-        md: {},
-        contacts: {}
+        idp: {
+            sup_rs: 'no',
+            sup_coco: 'no',
+            md : {},
+            metadata_providers: {}
+        },
+        contacts: {},
+        web: {
+            
+        }
 
     };
-    playbook.idp.metadata_providers = {};
+
 
 
     return new Promise((resolve, reject) => {
