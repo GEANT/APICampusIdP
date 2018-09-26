@@ -119,6 +119,20 @@ const schema = {
             "rdfs:label": "logo"
         },
         {
+            "@id": vocab+"scopes",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"sso"
+                },
+                {
+                    "@id" : vocab+"aa"
+                }
+            ],
+            "rdfs:comment": "scope",
+            "rdfs:label": "scope"
+        },
+        {
             "@id" : vocab+"hostname",
             "@type": "rdf:Property",
             "http://schema.org/domainIncludes" : [

@@ -14,40 +14,67 @@ const yaml = require('write-yaml');
 const writeData = require('write-data');
 const json2yaml = require('json2yaml');
 const eol = require('eol');
-const errPrefix= "313";
+const errPrefix = "313";
 //const ansibleTemplateFile = fs.open('../etc/an.yml');
 
 
 const genEntityID = function (input, playbook) {
-    let entity =  _.get(input, ['@graph','0', 'components','idp','entityID']);
+    let entity = _.get(input, ['@graph', '0', 'components', 'idp', 'entityID']);
     playbook.idp.entityID = entity;
 
     return playbook;
 };
 
-const genOrgInfo = function (input, playbook){
+const genOrgInfo = function (input, playbook) {
 
     let res = _.get(input, ['@graph', '0', 'organization']);
-    if(! playbook.hasOwnProperty('idp_metadata')){
+    if (!playbook.hasOwnProperty('idp_metadata')) {
         playbook.md = {};
     }
-    if(! playbook.md.hasOwnProperty('en')){
+    if (!playbook.md.hasOwnProperty('en')) {
         playbook.md.en = {};
     }
 
     playbook.md.en.org_name = res.name;
     playbook.md.en.org_displayName = res.name;
     playbook.md.en.org_url = res.url;
-    playbook.md.en.mdui_displayName =  res.name;
+    playbook.md.en.mdui_displayName = res.name;
     playbook.md.en.mdui_infoUrl = res.url;
     playbook.md.en.mdui_logo = res.logo;
     return playbook;
 };
 
-const getIdpMetadata = function (input , playbook){
+const getIdpMetadata = function (input, playbook) {
     /**
      * @todo finish
      */
+};
+
+const getSSOScopes = function (input, playbook) {
+    let scopesMeta = _.get(input, ['@graph', '0', 'components', 'idp', 'sso', 'scopes']);
+    if (typeof scopesMeta === 'undefined') {
+        return playbook;
+    }
+    if (Array.isArray(scopesMeta)) {
+        if(scopesMeta.length === 0){
+            return playbook;
+        }
+        if(!playbook.idp.hasOwnProperty('scope')){
+            playbook.idp.scope = [];
+        }
+        for (let i = 0; i < scopesMeta.length; i++) {
+            playbook.idp.scope.push(scopesMeta[i]);
+        }
+    }else{
+        if(!playbook.idp.hasOwnProperty('scope')){
+            playbook.idp.scope = [];
+        }
+        playbook.idp.scope.push(scopesMeta);
+    }
+
+
+    return playbook;
+
 };
 
 const genMetadataProviders = function (input, playbook) {
@@ -65,7 +92,6 @@ const genMetadataProviders = function (input, playbook) {
     else {
         metaProvidersList = metaProviders;
     }
-
 
 
     playbook.idp.metadata_providers = [];
@@ -96,15 +122,15 @@ const genMetadataProviders = function (input, playbook) {
     return playbook;
 };
 
-const genFqdn = function (input, playbook){
+const genFqdn = function (input, playbook) {
     let res = _.get(input, ['@graph', '0', 'components', 'web']);
     if (typeof res === 'undefined') {
         throw 'fqdn not found';
     }
-    if(res['@type'] !== 'WebServer'){
+    if (res['@type'] !== 'WebServer') {
         throw 'fqdn not found (incorrect node type';
     }
-    if(typeof res.hostname === 'undefined'){
+    if (typeof res.hostname === 'undefined') {
         throw 'fqdn not found (missing hostname attr)';
     }
     playbook.fqdn = res.hostname;
@@ -118,13 +144,13 @@ const genContacts = function (input, playbook) {
     }
     console.log(Array.isArray(contacts));
     console.log(contacts.length);
-    if(Array.isArray(contacts)) {
-        if(contacts.length === 0){
+    if (Array.isArray(contacts)) {
+        if (contacts.length === 0) {
             throw 'Contacts not found in the config';
         }
         for (let i = 0; i < contacts.length; i++) {
             let contactType = contacts[i].contactType;
-            if(!playbook.contacts.hasOwnProperty(contactType)){
+            if (!playbook.contacts.hasOwnProperty(contactType)) {
                 playbook.contacts[contactType] = [];
             }
 
@@ -139,7 +165,7 @@ const genContacts = function (input, playbook) {
     else {
         let contactType = contacts.contactType;
 
-        if(typeof contactType === 'undefined'){
+        if (typeof contactType === 'undefined') {
             throw 'Contacts not found in the config';
         }
         let cnt = {
@@ -168,15 +194,16 @@ const genPlaybook = function (input, version = null) {
     return new Promise((resolve, reject) => {
         let frame = {
             "@context": vocab,
-          "@type": myVocab + "ServiceDescription"
+            "@type": myVocab + "ServiceDescription"
         };
         const framed = jsonldPromises.frame(input, frame);
         framed.then((result) => {
-            genFqdn(result,playbook);
-            genOrgInfo(result,playbook);
+            genFqdn(result, playbook);
+            genOrgInfo(result, playbook);
             genMetadataProviders(result, playbook);
-            genContacts(result,playbook);
-            genEntityID(result,playbook);
+            getSSOScopes(result,playbook);
+            genContacts(result, playbook);
+            genEntityID(result, playbook);
 
             let yamlst = json2yaml.stringify(playbook);
             resolve(yamlst);
