@@ -242,8 +242,6 @@ const genContacts = function (input, playbook) {
     if (typeof contacts === 'undefined') {
         throw 'Contacts not found in the config';
     }
-    console.log(Array.isArray(contacts));
-    console.log(contacts.length);
     if (Array.isArray(contacts)) {
         if (contacts.length === 0) {
             throw 'Contacts not found in the config';
@@ -253,8 +251,6 @@ const genContacts = function (input, playbook) {
             if (!playbook.contacts.hasOwnProperty(contactType)) {
                 playbook.contacts[contactType] = [];
             }
-
-            console.log(contactType);
             let cnt = {
                 email: contacts[i].email,
                 name: contacts[i].name
