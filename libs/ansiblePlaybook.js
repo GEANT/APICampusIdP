@@ -122,6 +122,64 @@ const genMetadataProviders = function (input, playbook) {
     return playbook;
 };
 
+const genSSOKeys = function(input, playbook){
+
+
+    let res = _.get(input, ['@graph', '0', 'components', 'idp','sso', 'certificates']);
+    if (typeof res === 'undefined') {
+        throw 'sso keys not found';
+    }
+    if (Array.isArray(res)) {
+
+        if(res.length === 0){
+            throw 'sso keys not found';
+        }
+        if(!playbook.idp.hasOwnProperty('sso_keys')){
+            playbook.idp.sso_keys = [];
+        }
+        for (let i = 0; i < res.length; i++) {
+            let nKey = {};
+            if(res[i].hasOwnProperty('use')){
+                if(res[i].use === 'signing'){
+                    nKey.use = 'sign';
+                }
+                else {
+                    nKey.use = 'enc';
+                }
+            }
+            nKey.privKey = res[i].privateKey;
+            nKey.pubKey = res[i].publicKey;
+            if(res[i].hasOwnProperty('password')){
+                nKey.password = res[i].password;
+            }
+
+            playbook.idp.sso_keys.push(nKey);
+        }
+    }else{
+        if(!playbook.idp.hasOwnProperty('sso_keys')){
+            playbook.idp.sso_keys = [];
+        }
+        let nKey = {};
+        if(res.hasOwnProperty('use')){
+            if(res.use === 'signing'){
+                nKey.use = 'sign';
+            }
+            else {
+                nKey.use = 'enc';
+            }
+        }
+        nKey.privKey = res.privateKey;
+        nKey.pubKey = res.publicKey;
+        if(res.hasOwnProperty('password')){
+            nKey.password = res.password;
+        }
+
+        playbook.idp.sso_keys.push(nKey);
+    }
+
+    return playbook;
+};
+
 const genFqdn = function (input, playbook) {
     let res = _.get(input, ['@graph', '0', 'components', 'web']);
     if (typeof res === 'undefined') {
@@ -204,6 +262,7 @@ const genPlaybook = function (input, version = null) {
             getSSOScopes(result,playbook);
             genContacts(result, playbook);
             genEntityID(result, playbook);
+            genSSOKeys(result,playbook);
 
             let yamlst = json2yaml.stringify(playbook);
             resolve(yamlst);
