@@ -125,7 +125,6 @@ const genSystem = function(input, playbook){
       playbook.sys = {};
   }
   playbook.sys.swap = '2';
-  playbook.sys.my_timezone = 'Europe/Rome';
   playbook.sys.ntp1 = 'ntp1.inrim.it';
   playbook.sys.ntp2 = 'ntp2.inrim.it';
   playbook.sys.ntp3 = '0.it.pool.ntp.org';
@@ -229,6 +228,12 @@ const genFqdn = function (input, playbook) {
         throw 'fqdn not found (missing hostname attr)';
     }
     playbook.fqdn = res.hostname;
+
+    if(typeof  res.logo !== "undefined" && res.log !== ''){
+        playbook.idp.md.en.mdui_logo = res.logo;
+    }
+
+
     return playbook;
 };
 
@@ -281,12 +286,19 @@ const genPlaybook = function (input, version = null) {
         idp: {
             sup_rs: 'no',
             sup_coco: 'no',
-            md : {},
+            md : {
+                en: {
+
+                }
+            },
             metadata_providers: {}
         },
         contacts: {},
         web: {
-            
+
+        },
+        sys : {
+            my_timezone: 'utc'
         }
 
     };
@@ -300,8 +312,8 @@ const genPlaybook = function (input, version = null) {
         };
         const framed = jsonldPromises.frame(input, frame);
         framed.then((result) => {
-            genFqdn(result, playbook);
             genOrgInfo(result, playbook);
+            genFqdn(result, playbook);
             genMetadataProviders(result, playbook);
             getSSOScopes(result,playbook);
             genContacts(result, playbook);
