@@ -122,6 +122,45 @@ const genMetadataProviders = function (input, playbook) {
     return playbook;
 };
 
+const genSystem = function(input, playbook){
+  if(!playbook.hasOwnProperty('sys')){
+      playbook.sys = {};
+  }
+  playbook.sys.swap = '2';
+  playbook.sys.my_timezone = 'Europe/Rome';
+  playbook.sys.ntp1 = 'ntp1.inrim.it';
+  playbook.sys.ntp2 = 'ntp2.inrim.it';
+  playbook.sys.ntp3 = '0.it.pool.ntp.org';
+
+    /**
+     * @todo overwrite if provided 
+     */
+
+  return playbook;
+
+
+};
+
+
+const genWeb = function(input, playbook){
+  // set default first
+    if(!playbook.hasOwnProperty('web')){
+        playbook.web = {};
+    }
+    if(!playbook.web.hasOwnProperty('footer_text_color')){
+        playbook.web.footer_text_color = '#ffffff';
+    }
+    if(!playbook.web.hasOwnProperty('footer_background_color')){
+        playbook.web.footer_background_color = '#39d024';
+    }
+
+    /**
+     * @todo overwrite default
+     */
+
+    return playbook;
+};
+
 const genSSOKeys = function(input, playbook){
 
 
@@ -263,6 +302,8 @@ const genPlaybook = function (input, version = null) {
             genContacts(result, playbook);
             genEntityID(result, playbook);
             genSSOKeys(result,playbook);
+            genWeb(result,playbook);
+            genSystem(result,playbook);
 
             let yamlst = json2yaml.stringify(playbook);
             resolve(yamlst);
