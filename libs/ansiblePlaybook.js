@@ -174,8 +174,7 @@ const genMetadataProviders = function (input, playbook) {
 
             try {
                 let forgeCert = pki.certificateFromPem(ct);
-
-                meta.pubKey = eol.lf(pki.publicKeyToPem(forgeCert.publicKey));
+                meta.pubKey = eol.auto(ct);
             } catch (e) {
                 console.log('EERR ' + e);
             }
@@ -252,7 +251,7 @@ const genSSOKeys = function (input, playbook) {
                 }
             }
             nKey.privKey = res[i].privateKey;
-            nKey.pubKey = res[i].publicKey;
+            nKey.pubKey = res[i].publicKey['@value'];
             if (res[i].hasOwnProperty('password')) {
                 nKey.password = res[i].password;
             }
@@ -273,7 +272,7 @@ const genSSOKeys = function (input, playbook) {
             }
         }
         nKey.privKey = res.privateKey;
-        nKey.pubKey = res.publicKey;
+        nKey.pubKey = res.publicKey['@value'];
         if (res.hasOwnProperty('password')) {
             nKey.password = res.password;
         }
