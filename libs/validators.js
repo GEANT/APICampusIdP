@@ -18,6 +18,7 @@ const myVocab = context['@vocab'];
 const validator = require('validator');
 const isValidDomain = require('is-valid-domain');
 const configGenHelper = require('./configGenHelper');
+const isEmbUrlImage = require('./validations/isEmbImage');
 const errPrefix = "323";
 let app;
 
@@ -34,8 +35,11 @@ const validateWebComponent = function (expand) {
 
         konsole('FG: ' + expand[genKeyWithPref('components')]);
         if (expand[genKeyWithPref('components')] !== undefined && expand[genKeyWithPref('components')][genKeyWithPref('web')]) {
-            var myNode = expand[genKeyWithPref('components')][genKeyWithPref('web')];
+            let myNode = expand[genKeyWithPref('components')][genKeyWithPref('web')];
             konsole('FF: ' + JSON.stringify(myNode));
+            let favicon = _.get(myNode,'favicon');
+            console.log(favicon);
+
             resolve(expand);
         }
         else {
@@ -237,7 +241,10 @@ const processValidation = function (req, res, next) {
             if (isValidDomain(hostname) !== true) {
                 return reject('invalid hostname value');
             }
-
+            let favicon =  _.get(expanded, ['0', '' + myVocab + 'components', '0', '' + myVocab + 'web', '0', '' + myVocab + 'favicon', '0', '@value']);
+            if(typeof favicon !== 'undefined' && !isEmbUrlImage(favicon)){
+                return reject('invalid favicon value');
+            }
             // start walk through components
             // idp component
 
@@ -439,7 +446,7 @@ const serviceValidatorRequest = function (req, res, next) {
         res.locals.expandedInput = expresolve;
 
     }).then(() => {
-        return processValidation(req, res, next)
+        return processValidation(req, res, next);
     }).then(() => {
         const flatt = jsonldPromises.flatten(res.locals.expandedInput);
         res.locals.srvConfExpand = res.locals.expandedInput;

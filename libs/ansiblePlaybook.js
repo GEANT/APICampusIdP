@@ -72,7 +72,15 @@ const genOrgInfo = function (input, playbook) {
     }
     return playbook;
 
-}
+};
+
+const genFavicon = function(input, playbook){
+  let favicon = _.get(input, ['@graph', '0', 'components', 'web', 'favicon']);
+  if(typeof favicon !== "undefined"){
+      playbook.idp.favicon = favicon;
+  }
+  return playbook;
+};
 
 const getLogo = function (res, playbook) {
     let tmpLogoName = [];
@@ -81,12 +89,10 @@ const getLogo = function (res, playbook) {
         tmpLogoName = res.logo;
     }
     else {
-        if (typeof res.log !== 'undefined') {
+        if (typeof res.logo !== 'undefined') {
             tmpLogoName.push(res.logo);
         }
     }
-
-
     for (let i = 0; i < tmpLogoName.length; i++) {
         let tmpName = tmpLogoName[i];
         if (tmpName.hasOwnProperty('@value')) {
@@ -159,7 +165,6 @@ const genMetadataProviders = function (input, playbook) {
         metaProvidersList = metaProviders;
     }
 
-
     playbook.idp.metadata_providers = [];
 
     for (let i = 0; i < metaProvidersList.length; i++) {
@@ -200,6 +205,10 @@ const genSystem = function (input, playbook) {
      * @todo overwrite if provided
      */
 
+    let timez = _.get(input, ['@graph','0','components','web','timezone']);
+    if(typeof timez !== "undefined"){
+        playbook.sys.my_timezone = timez;
+    }
     return playbook;
 
 
@@ -296,12 +305,14 @@ const genFqdn = function (input, playbook) {
     }
     playbook.fqdn = res.hostname;
 
-    if (typeof  res.logo !== "undefined" && res.log !== '') {
+    if (typeof  res.logo !== "undefined" && res.logo !== '') {
+        console.log('logo found');
 
         getLogo(res,playbook);
     }
-
-
+else {
+        console.log('logo found');
+    }
 
     return playbook;
 };
@@ -342,6 +353,22 @@ const genContacts = function (input, playbook) {
     return playbook;
 };
 
+const genEntityCategories = function(input,playbook){
+    let categories = _.get(input, ['@graph','0','components','idp','entityCategories']);
+    if(typeof categories === "object" ){
+        if(categories.hasOwnProperty('coco') && categories.coco === true){
+            playbook.idp.sup_coco = 'yes';
+        }
+        if(categories.hasOwnProperty('research-and-scholarship') && categories["research-and-scholarship"] === true){
+            playbook.idp.sup_rs = 'yes';
+        }
+    }
+    return playbook;
+};
+
+const getTimeZone = function(input,playbook){
+
+};
 
 const genPlaybook = function (input, version = null) {
 
@@ -378,9 +405,11 @@ const genPlaybook = function (input, version = null) {
             getSSOScopes(result, playbook);
             genContacts(result, playbook);
             genEntityID(result, playbook);
+            genEntityCategories(result, playbook);
             genSSOKeys(result, playbook);
             genWeb(result, playbook);
             genSystem(result, playbook);
+            genFavicon(result,playbook);
 
             let yamlst = json2yaml.stringify(playbook);
             resolve(yamlst);

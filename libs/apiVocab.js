@@ -105,6 +105,28 @@ const schema = {
             "rdfs:label": "X509Certificate"
         },
         {
+            "@id" : vocab+"favicon",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"WebServer"
+                }
+            ],
+            "rdfs:comment": "favicon",
+            "rdfs:label": "favicon"
+        },
+        {
+            "@id" : vocab+"timezone",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"WebServer"
+                }
+            ],
+            "rdfs:comment": "timezone",
+            "rdfs:label": "timezone"
+        },
+        {
             "@id" : vocab+"logo",
             "@type": "rdf:Property",
             "http://schema.org/domainIncludes" : [
@@ -277,6 +299,28 @@ const schema = {
             "rdfs:label": "entityID of Identity/Service Provider"
         },
         {
+            "@id" : vocab+"coco",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"entityCategories"
+                }
+            ],
+            "rdfs:comment": "http://www.geant.net/uri/dataprotection-code-of-conduct",
+            "rdfs:label": "http://www.geant.net/uri/dataprotection-code-of-conduct"
+        },
+        {
+            "@id" : vocab+"research-and-scholarship",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"entityCategories"
+                }
+            ],
+            "rdfs:comment": "http://refeds.org/category/research-and-scholarship",
+            "rdfs:label": "http://refeds.org/category/research-and-scholarship"
+        },
+        {
             "@id" : vocab+"metadataProviders",
             "@type": "rdf:Property",
             "http://schema.org/domainIncludes" : [
@@ -360,6 +404,17 @@ const schema = {
             "@type": "rdf:Property",
             "rdfs:comment": "components : usually collection of config elements",
             "rdfs:label": "components"
+        },
+        {
+            "@id" : vocab+"entityCategories",
+            "@type": "rdf:Property",
+            "http://schema.org/domainIncludes" : [
+                {
+                    "@id" : vocab+"IdPConf"
+                }
+            ],
+            "rdfs:comment": "collection of support entity categories",
+            "rdfs:label": "collection of support entity categories"
         },
         {
             "@id" : vocab+"definitions",
