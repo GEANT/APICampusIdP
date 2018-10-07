@@ -3,9 +3,9 @@ const Schema = mongoose.Schema;
 const version = require('mongoose-version');
 const _ = require('lodash');
 const ProviderConfig = require('./ProviderConfig_schema');
-var konsole = require('../libs/konsole');
+const konsole = require('../libs/konsole');
 
-var ProviderSchema = new Schema({
+const ProviderSchema = new Schema({
     name: {
         type: String,
         required: true,

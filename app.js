@@ -3,6 +3,9 @@ const fs = require('fs');
 const _ = require('lodash');
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const Emmiter = require('events');
+const eventsConfig = require('./libs/eventsConfig').events;
+const eventsListeners = require('./libs/eventsConfig').listeners;
 const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
@@ -30,6 +33,7 @@ const verifyToken = require('./libs/verifyToken');
 const index = require('./routes/index');
 const users = require('./routes/users');
 const idp = require('./routes/idp');
+const idpTasks = require('./routes/tasks/idp');
 const clientapi = require('./routes/clientapi');
 const authenticate = require('./routes/authenticate');
 const jsonldContext = require('./routes/jsonldContext');
@@ -80,6 +84,8 @@ else {
 }
 
 app.set('appConfig', appConfig);
+const xapitoken = appConfig.get('x-api-token');
+app.set('x-api-token',xapitoken);
 const db_settings = appConfig.get('database');
 const dbUser = nconf.get("DB:USER") || db_settings.user;
 const dbPass = nconf.get("DB:PASSWORD")||db_settings.pass;
@@ -103,7 +109,17 @@ if(process.env.NODE_ENV !== 'test') {
     });
 }
 
+/// EVENTS
+/**
+ *
+ * @todo improve listeners reqistration
+ */
 
+const emtr = new Emmiter();
+for(let i = 0; i < eventsListeners.SPAWNIDP.length; i++){
+    emtr.on(eventsConfig.SPAWNIDP,eventsListeners.SPAWNIDP[i]);
+}
+app.set('emtr',emtr);
 
 
 
@@ -138,11 +154,13 @@ app.use('/', index);
 app.use('/authenticate', authenticate);
 app.use('/users', users);
 app.use('/idp', idp);
+app.use('/tasks/idp',idpTasks);
 // client api ui
 app.use('/clientapi', clientapi);
 
 app.use('/context', jsonldContext);
 app.use('/schema', apiSchema);
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
