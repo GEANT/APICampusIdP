@@ -67,19 +67,32 @@ const genOrgInfo = function (input, playbook) {
 
 
 //    playbook.idp.md.en.mdui_logo = res.logo;
-    if(typeof res.logo !== "undefined"){
-        getLogo(res,playbook);
+    if (typeof res.logo !== "undefined") {
+        getLogo(res, playbook);
     }
     return playbook;
 
 };
 
-const genFavicon = function(input, playbook){
-  let favicon = _.get(input, ['@graph', '0', 'components', 'web', 'favicon']);
-  if(typeof favicon !== "undefined"){
-      playbook.idp.favicon = favicon;
-  }
-  return playbook;
+const genFavicon = function (input, playbook) {
+    let favicon = _.get(input, ['@graph', '0', 'components', 'web', 'favicon']);
+    if (typeof favicon === "undefined") {
+        return playbook;
+    }
+    if (playbook.idp.hasOwnProperty('md') !== true) {
+        playbook.idp.md = {};
+    }
+    if (playbook.idp.md.hasOwnProperty('en') !== true) {
+        playbook.idp.md.en = {};
+    }
+    for (let key in playbook.idp.md) {
+        if (playbook.idp.md.hasOwnProperty(key)) {
+            playbook.idp.md[key].mdui_favicon = favicon;
+        }
+    }
+    //playbook.idp.favicon = favicon;
+    return playbook;
+
 };
 
 const getLogo = function (res, playbook) {
@@ -113,6 +126,7 @@ const getLogo = function (res, playbook) {
 
     playbook.idp.md.en.org_url = res.url;
     playbook.idp.md.en.mdui_infoUrl = res.url;
+
     return playbook;
 };
 
@@ -205,8 +219,8 @@ const genSystem = function (input, playbook) {
      * @todo overwrite if provided
      */
 
-    let timez = _.get(input, ['@graph','0','components','web','timezone']);
-    if(typeof timez !== "undefined"){
+    let timez = _.get(input, ['@graph', '0', 'components', 'web', 'timezone']);
+    if (typeof timez !== "undefined") {
         playbook.sys.my_timezone = timez;
     }
     return playbook;
@@ -308,9 +322,9 @@ const genFqdn = function (input, playbook) {
     if (typeof  res.logo !== "undefined" && res.logo !== '') {
         console.log('logo found');
 
-        getLogo(res,playbook);
+        getLogo(res, playbook);
     }
-else {
+    else {
         console.log('logo found');
     }
 
@@ -353,20 +367,20 @@ const genContacts = function (input, playbook) {
     return playbook;
 };
 
-const genEntityCategories = function(input,playbook){
-    let categories = _.get(input, ['@graph','0','components','idp','entityCategories']);
-    if(typeof categories === "object" ){
-        if(categories.hasOwnProperty('coco') && categories.coco === true){
+const genEntityCategories = function (input, playbook) {
+    let categories = _.get(input, ['@graph', '0', 'components', 'idp', 'entityCategories']);
+    if (typeof categories === "object") {
+        if (categories.hasOwnProperty('coco') && categories.coco === true) {
             playbook.idp.sup_coco = 'yes';
         }
-        if(categories.hasOwnProperty('research-and-scholarship') && categories["research-and-scholarship"] === true){
+        if (categories.hasOwnProperty('research-and-scholarship') && categories["research-and-scholarship"] === true) {
             playbook.idp.sup_rs = 'yes';
         }
     }
     return playbook;
 };
 
-const getTimeZone = function(input,playbook){
+const getTimeZone = function (input, playbook) {
 
 };
 
@@ -409,7 +423,7 @@ const genPlaybook = function (input, version = null) {
             genSSOKeys(result, playbook);
             genWeb(result, playbook);
             genSystem(result, playbook);
-            genFavicon(result,playbook);
+            genFavicon(result, playbook);
 
             let yamlst = json2yaml.stringify(playbook);
             resolve(yamlst);
