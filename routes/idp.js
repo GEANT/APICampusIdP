@@ -232,24 +232,28 @@ router.get('/', verifyToken, (req, res) => {
 
     //res.json({xvxcv: "f"});
 
-
-    let providers = Provider.find();
-    providers.then(
+    let username = res.locals.tokenDecoded.sub;
+    let uPromise = User.findOne({username: username});
+    let pProviders = Provider.find();
+    Promise.all([uPromise, pProviders]).then(
         (result) => {
+            let providers = result[1];
+            let user = result[0];
+
             let output = {
                 '@context': vocab,
                 '@type': "Collection",
                 'members': []
             };
-            for(let i = 0; i < result.length; i++ ){
+            for(let i = 0; i < providers.length; i++ ){
 
-                if(result[i].name){
+                if(providers[i].name && providers[i].creator._id.equals(user._id)){
                     output.members.push(
                         {
-                            "@id": result[i].url,
+                            "@id": providers[i].url,
                             "@type": "ServiceDescription",
-                            "name": result[i].name,
-                            "status": result[i].status
+                            "name": providers[i].name,
+                            "status": providers[i].status
                         }
                     );
                 }
@@ -259,11 +263,11 @@ router.get('/', verifyToken, (req, res) => {
 
 
             }
-            if (result === null) {
+            if (providers === null) {
                 res.status(404).json({"error": true, "message": "Not found","id": errorPrefix+"013"});
             }
             else {
-                let filteredRes = filterOutput(result);
+                let filteredRes = filterOutput(providers);
                 res.json(output);
             }
         }
