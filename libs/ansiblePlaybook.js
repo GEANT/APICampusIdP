@@ -192,8 +192,8 @@ const genMetadataProviders = function (input, playbook) {
         if (typeof ct !== 'undefined') {
 
             try {
-                let forgeCert = pki.certificateFromPem(ct);
-                meta.pubKey = eol.auto(ct);
+                meta.pubKey = eol.auto(ct.replace('-----BEGIN CERTIFICATE-----','').replace('-----END CERTIFICATE-----','').trim());
+                meta.pubKey.replace('-----BEGIN CERTIFICATE-----','').replace('-----END CERTIFICATE-----','');
             } catch (e) {
                 console.log('EERR ' + e);
             }
@@ -210,7 +210,7 @@ const genSystem = function (input, playbook) {
     if (!playbook.hasOwnProperty('sys')) {
         playbook.sys = {};
     }
-    playbook.sys.swap = '2';
+    playbook.sys.swap = '2048';
     playbook.sys.ntp1 = 'ntp1.inrim.it';
     playbook.sys.ntp2 = 'ntp2.inrim.it';
     playbook.sys.ntp3 = '0.it.pool.ntp.org';
