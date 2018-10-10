@@ -211,9 +211,9 @@ const genSystem = function (input, playbook) {
         playbook.sys = {};
     }
     playbook.sys.swap = '2048';
-    playbook.sys.ntp1 = 'ntp1.inrim.it';
+    /*playbook.sys.ntp1 = 'ntp1.inrim.it';
     playbook.sys.ntp2 = 'ntp2.inrim.it';
-    playbook.sys.ntp3 = '0.it.pool.ntp.org';
+    playbook.sys.ntp3 = '0.it.pool.ntp.org';*/
 
     /**
      * @todo overwrite if provided
