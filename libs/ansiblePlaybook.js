@@ -349,7 +349,9 @@ const genContacts = function (input, playbook) {
                 email: contacts[i].email,
                 name: contacts[i].name
             };
-            playbook.contacts[contactType].push(cnt);
+            if(cnt.email && cnt.name) {
+                playbook.contacts[contactType].push(cnt);
+            }
         }
     }
     else {
