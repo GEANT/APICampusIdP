@@ -188,12 +188,32 @@ const genMetadataProviders = function (input, playbook) {
         meta.file = 'metaprovider-' + metaProvidersList[i].attrID + '.xml';
         meta.maxValidInterval = 'P5D';
         meta.disregardTLSCertificate = "false";
-        let ct = eol.crlf(_.get(metaProvidersList, [i, 'publicKey', '@value']));
+
+        let certificate = eol.crlf(_.get(metaProvidersList, [i, 'publicKey', '@value']));
+
+        let ct;
+        try {
+            // convert CERTIFICATE TO PUBLIC KEY
+            let forgeCert = pki.certificateFromPem(certificate);
+            ct = eol.lf(pki.publicKeyToPem(forgeCert.publicKey));
+
+         //   console.log("CERT START");
+         //   console.log(ct);
+        }catch(e){
+             console.log('EERR ' + e);
+
+        }
+
+
         if (typeof ct !== 'undefined') {
 
             try {
+                /*
                 meta.pubKey = eol.auto(ct.replace('-----BEGIN CERTIFICATE-----','').replace('-----END CERTIFICATE-----','').trim());
-                meta.pubKey.replace('-----BEGIN CERTIFICATE-----','').replace('-----END CERTIFICATE-----','');
+                meta.pubKey.replace('-----BEGIN CERTIFICATE-----','').replace('-----END CERTIFICATE-----','');*/
+
+                meta.pubKey = eol.auto(ct.replace('-----BEGIN PUBLIC KEY-----','').replace('-----END PUBLIC KEY-----','').trim());
+                meta.pubKey.replace('-----BEGIN PUBLIC KEY-----','').replace('-----END PUBLIC KEY-----','');
             } catch (e) {
                 console.log('EERR ' + e);
             }
@@ -319,14 +339,11 @@ const genFqdn = function (input, playbook) {
     }
     playbook.fqdn = res.hostname;
 
-    if (typeof  res.logo !== "undefined" && res.logo !== '') {
-        console.log('logo found');
+    if (typeof  res.logo !== "undefined" && res.logo !== '') {;
 
         getLogo(res, playbook);
     }
-    else {
-        console.log('logo found');
-    }
+
 
     return playbook;
 };
@@ -364,7 +381,9 @@ const genContacts = function (input, playbook) {
             email: contacts.email,
             name: contacts.name
         };
-        playbook.contacts[contactType] = cnt;
+        if(cnt.email && cnt.name) {
+            playbook.contacts[contactType] = cnt;
+        }
     }
     return playbook;
 };
