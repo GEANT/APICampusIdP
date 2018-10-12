@@ -186,7 +186,7 @@ const genMetadataProviders = function (input, playbook) {
         meta.id = metaProvidersList[i].attrID;
         meta.url = metaProvidersList[i].url;
         meta.file = 'metaprovider-' + metaProvidersList[i].attrID + '.xml';
-        meta.maxValidInterval = 'P5D';
+        meta.maxValidInterval = 'P10D';
         meta.disregardTLSCertificate = "false";
 
         let certificate = eol.crlf(_.get(metaProvidersList, [i, 'publicKey', '@value']));
